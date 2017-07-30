@@ -1,0 +1,56 @@
+# source will be downloaded prior to filling in jinja templates
+# Example assumes that this folder has setup.py in it
+source:
+  git_url: ../
+
+package:
+  name: mr-box-peripheral-board
+{% if GIT_DESCRIBE_NUMBER > '0' %}
+  version: {{ GIT_DESCRIBE_TAG[1:] }}.{{ GIT_DESCRIBE_NUMBER }}
+{% else %}
+  version: {{ GIT_DESCRIBE_TAG[1:] }}.0
+{% endif %}
+
+requirements:
+  build:
+    - future
+    - nanopb-helpers >=0.6
+    - paver
+    - pip
+    - platformio-framework-arduinoavr >=1.136.0
+    - platformio-helpers >=0.2
+    - platformio-tool-scons
+    - platformio-toolchain-atmelavr
+    - pytables
+    - python 2.7*
+    - base-node-rpc >=0.24
+    - arduino-aligned-alloc
+    - arduino-linked-list >=1.2.3
+    - arduino-memory
+
+  run:
+    - base-node >=0.8
+    - future
+    - nanopb-helpers >=0.6
+    - paver
+    - pip
+    - platformio-framework-arduinoavr >=1.136.0
+    - platformio-helpers >=0.2
+    - platformio-tool-scons
+    - platformio-toolchain-atmelavr
+    - pytables
+    - python 2.7*
+    - base-node-rpc >=0.24
+    - arduino-aligned-alloc
+    - arduino-linked-list >=1.2.3
+    - arduino-memory
+
+test:
+  imports:
+    - mr_box_peripheral_board
+  commands:
+    - python -m mr_box_peripheral_board.bin.upload -h
+
+about:
+  home: https://github.com/wheeler-microfluidics/mr-box-peripheral-board
+  license: MIT
