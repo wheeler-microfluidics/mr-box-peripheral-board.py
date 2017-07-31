@@ -55,7 +55,7 @@ options(
                   'BaseNodeI2cHandler<Handler>',
                   'BaseNodeConfig<ConfigMessage, Address>',
                   'BaseNodeState<StateMessage>'],
-    rpc_classes=['mr_box_peripheral_board::Node'],
+    rpc_classes=['mr_box_peripheral_board::PMT', 'mr_box_peripheral_board::Node'],
     setup=dict(name=PROPERTIES['name'],
                version=VERSION,
                description=LIB_PROPERTIES['short_description'],
