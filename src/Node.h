@@ -56,7 +56,7 @@ class Node :
 public:
   typedef PacketParser<FixedPacket> parser_t;
 
-  static const uint32_t BUFFER_SIZE = 128;  // >= longest property string
+  static const uint32_t BUFFER_SIZE = 80;  // >= longest property string
 
   uint8_t buffer_[BUFFER_SIZE];
 
