@@ -2,6 +2,7 @@
 #include "EEPROM.h"
 #include "Wire.h"
 #include "LinkedList.h"
+#include "FastDigital.h"
 #include "Memory.h"  // Memory utility functions, e.g., ram_free()
 #include <AlignedAlloc.h>
 #include "ArduinoRpc.h"
