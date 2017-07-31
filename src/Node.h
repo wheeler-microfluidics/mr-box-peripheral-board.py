@@ -26,6 +26,7 @@
 #include "mr_box_peripheral_board_state_validate.h"
 #include "MrBoxPeripheralBoard/config_pb.h"
 #include "MrBoxPeripheralBoard/state_pb.h"
+#include "PMT.h"
 
 namespace mr_box_peripheral_board {
 
@@ -52,7 +53,8 @@ class Node :
 #ifndef DISABLE_SERIAL
   public BaseNodeSerialHandler,
 #endif  // #ifndef DISABLE_SERIAL
-  public BaseNodeI2cHandler<base_node_rpc::i2c_handler_t> {
+  public BaseNodeI2cHandler<base_node_rpc::i2c_handler_t>,
+  public PMT {
 public:
   typedef PacketParser<FixedPacket> parser_t;
 
