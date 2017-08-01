@@ -12,4 +12,12 @@ paver-minilib.zip
 .idea
 *.pyc
 .pioenvs/
-notebooks/.ipynb_checkpoints/
+*/notebooks/.ipynb_checkpoints/
+
+lib
+*/config.py
+*/node.py
+*/state.py
+src/NodeCommandProcessor.h
+src/*_config_validate.h
+src/*_state_validate.h
