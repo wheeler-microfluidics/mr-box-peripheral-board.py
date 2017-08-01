@@ -14,7 +14,7 @@ message Config {
    * package to interface with each other. */
   // optional uint32 serial_number = 1; // deprecated
   // optional uint32 baud_rate = 2 [default = 115200]; // deprecated
-  optional uint32 i2c_address = 3;
+  // optional uint32 i2c_address = 3;
   optional string id = 4 [default = ''];  // Human readable hardware identifier
 
   /* Start new fields below.

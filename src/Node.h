@@ -11,10 +11,8 @@
 #include "MrBoxPeripheralBoard/Properties.h"  // Define package name, URL, etc.
 #include <BaseNodeRpc/BaseNode.h>
 #include <BaseNodeRpc/BaseNodeEeprom.h>
-#include <BaseNodeRpc/BaseNodeI2c.h>
 #include <BaseNodeRpc/BaseNodeConfig.h>
 #include <BaseNodeRpc/BaseNodeState.h>
-#include <BaseNodeRpc/BaseNodeI2cHandler.h>
 #include <BaseNodeRpc/BaseNodeSerialHandler.h>
 #include <BaseNodeRpc/SerialHandler.h>
 #include <pb_cpp_api.h>
@@ -47,13 +45,11 @@ typedef nanopb::Message<mr_box_peripheral_board_State,
 class Node :
   public BaseNode,
   public BaseNodeEeprom,
-  public BaseNodeI2c,
   public BaseNodeConfig<config_t>,
   public BaseNodeState<state_t>,
 #ifndef DISABLE_SERIAL
   public BaseNodeSerialHandler,
 #endif  // #ifndef DISABLE_SERIAL
-  public BaseNodeI2cHandler<base_node_rpc::i2c_handler_t>,
   public PMT,
   public Pump {
 public:

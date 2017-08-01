@@ -51,8 +51,6 @@ options(
     LIB_PROPERTIES=LIB_PROPERTIES,
     base_classes=['BaseNodeSerialHandler',
                   'BaseNodeEeprom',
-                  'BaseNodeI2c',
-                  'BaseNodeI2cHandler<Handler>',
                   'BaseNodeConfig<ConfigMessage, Address>',
                   'BaseNodeState<StateMessage>'],
     rpc_classes=['mr_box_peripheral_board::PMT',

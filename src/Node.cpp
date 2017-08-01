@@ -21,12 +21,6 @@ void Node::begin() {
   state_.validate();
 
   Serial.begin(57600);
-
-  // If we have a valid i2c address (i.e., if Wire.begin() was called)
-  if (config_._.i2c_address > 0) {
-    // set the i2c clock
-    Wire.setClock(400000);
-  }
 }
 
 }  // namespace mr_box_peripheral_board
