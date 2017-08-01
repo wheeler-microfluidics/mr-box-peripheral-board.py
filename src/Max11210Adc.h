@@ -10,7 +10,7 @@ namespace mr_box_peripheral_board {
 
 class Max11210Adc {
 public:
-    const uint8_t ADC_CS_PIN = 6;   // MAX11210 Select Pin
+    const uint8_t ADC_CS_PIN = 10;   // MAX11210 Select Pin
     const uint8_t MOSI_PIN   = 11;  // DIN
     const uint8_t MISO_PIN   = 12;  // DOUT
     const uint8_t SCK_PIN    = 13;  // Signal Clock
