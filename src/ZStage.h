@@ -14,6 +14,9 @@ private:
   const int PIN_DIRECTION = A1;
   const int PIN_ENABLE = A3;
 
+  // Consider analog values less than a quarter of full 10-bit range as `LOW`.
+  const uint16_t ANALOG_LOW_THRESHOLD = 1024 / 4;
+
   /* XXX End-stops are connected to ADC inputs 6 and 7, which are **only**
    * analog inputs and may not be configured as outputs (see [here][1]).  This
    * also means that these pins **DO NOT** have internal pull-up resistors.
@@ -169,7 +172,13 @@ public:
   bool zstage_engaged_stop_enabled() const { return state_.engaged_stop_enabled; }
 
   bool zstage_at_home() {
-    return state_.home_stop_enabled && (analogRead(PIN_END_STOP_1) == 0);
+    return state_.home_stop_enabled && (analogRead(PIN_END_STOP_1) <
+                                        ANALOG_LOW_THRESHOLD);
+  }
+
+  bool zstage_engaged() {
+    return state_.engaged_stop_enabled && (analogRead(PIN_END_STOP_2) <
+                                           ANALOG_LOW_THRESHOLD);
   }
 };
 
