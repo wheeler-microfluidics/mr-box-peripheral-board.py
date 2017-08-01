@@ -69,6 +69,7 @@ options(
                install_requires=['base-node-rpc>=0.23'],
                include_package_data=True,
                packages=['mr_box_peripheral_board',
+                         'mr_box_peripheral_board.notebooks',
                          'mr_box_peripheral_board.bin']))
 
 
