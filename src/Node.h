@@ -12,7 +12,6 @@
 #include <BaseNodeRpc/BaseNode.h>
 #include <BaseNodeRpc/BaseNodeEeprom.h>
 #include <BaseNodeRpc/BaseNodeConfig.h>
-#include <BaseNodeRpc/BaseNodeState.h>
 #include <BaseNodeRpc/BaseNodeSerialHandler.h>
 #include <BaseNodeRpc/SerialHandler.h>
 #include <pb_cpp_api.h>
@@ -20,9 +19,7 @@
 #include <pb_eeprom.h>
 #include <FastDigital.h>
 #include "mr_box_peripheral_board_config_validate.h"
-#include "mr_box_peripheral_board_state_validate.h"
 #include "MrBoxPeripheralBoard/config_pb.h"
-#include "MrBoxPeripheralBoard/state_pb.h"
 #include "PMT.h"
 #include "Pump.h"
 
@@ -39,14 +36,11 @@ const char HARDWARE_VERSION_[] = "0.1.0";
 
 typedef nanopb::EepromMessage<mr_box_peripheral_board_Config,
                               config_validate::Validator<Node> > config_t;
-typedef nanopb::Message<mr_box_peripheral_board_State,
-                        state_validate::Validator<Node> > state_t;
 
 class Node :
   public BaseNode,
   public BaseNodeEeprom,
   public BaseNodeConfig<config_t>,
-  public BaseNodeState<state_t>,
 #ifndef DISABLE_SERIAL
   public BaseNodeSerialHandler,
 #endif  // #ifndef DISABLE_SERIAL
@@ -61,7 +55,6 @@ public:
 
   Node() : BaseNode(),
            BaseNodeConfig<config_t>(mr_box_peripheral_board_Config_fields),
-           BaseNodeState<state_t>(mr_box_peripheral_board_State_fields),
            Pump() {
     // XXX Turn on LED by default to indicate power is on.
     pinMode(LED_BUILTIN, OUTPUT);
