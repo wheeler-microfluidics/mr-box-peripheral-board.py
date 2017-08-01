@@ -24,6 +24,7 @@ requirements:
     - pytables
     - python 2.7*
     - base-node-rpc >=0.24
+    - arduino-fast-digital
     - arduino-aligned-alloc
     - arduino-linked-list >=1.2.3
     - arduino-memory
@@ -41,6 +42,7 @@ requirements:
     - pytables
     - python 2.7*
     - base-node-rpc >=0.24
+    - arduino-fast-digital
     - arduino-aligned-alloc
     - arduino-linked-list >=1.2.3
     - arduino-memory
