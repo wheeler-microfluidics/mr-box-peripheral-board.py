@@ -14,6 +14,14 @@ public:
     const uint8_t REFERENCE_ANALOG_PIN   = 14;  // Reference voltage pin
     const uint8_t SHUTTER_PIN            = 2;  //Shutter Pin (**active low**)
 
+
+    float pmt_reference_voltage() const {
+        // read the adc value
+        int sensorValue = analogRead(REFERENCE_ANALOG_PIN);
+        // convert the adc value
+        return sensorValue * (3.3 / 1023.0);
+    }
+
     float pmt_set_pot(uint8_t value) {
         /*
          * Parameters
@@ -21,6 +29,7 @@ public:
          * value : uint8_t
          *     Digital potentiometer value, 0-255.
          */
+        SPI.beginTransaction(SPISettings(3000000, MSBFIRST, SPI_MODE0));
         // take the SS pin low to select the chip:
         digitalWrite(MCP41050_CS_PIN, LOW);
         // send Command to write value and enable the pot:
@@ -29,15 +38,13 @@ public:
         SPI.transfer(value);
         // take the SS pin high to de-select the chip:
         digitalWrite(MCP41050_CS_PIN, HIGH);
+        SPI.endTransaction();
 
-        // read the adc value
-        int sensorValue = analogRead(REFERENCE_ANALOG_PIN);
-        // convert the adc value
-        return sensorValue * (3.3 / 1023.0);
+        return pmt_reference_voltage();
     }
 
-    void pmt_activate_shutter() { digitalWrite(SHUTTER_PIN, LOW); }
-    void pmt_deactivate_shutter() { digitalWrite(SHUTTER_PIN, HIGH); }
+    void pmt_open_shutter() { digitalWrite(SHUTTER_PIN, LOW); }
+    void pmt_close_shutter() { digitalWrite(SHUTTER_PIN, HIGH); }
 };
 
 }  // namespace mr_box_peripheral_board {
