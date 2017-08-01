@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from base_node_rpc.proxy import ConfigMixinBase, StateMixinBase
+from base_node_rpc.proxy import ConfigMixinBase
 import pandas as pd
 
 
@@ -13,9 +13,7 @@ try:
     # XXX The `config` module containing the `Config` class definition is
     # generated from the Protocol Buffer file `src/config.proto`.
     from .config import Config
-    # XXX The `state` module containing the `State` class definition is
-    # generated from the Protocol Buffer file `src/state.proto`.
-    from .state import State
+
 
     class ConfigMixin(ConfigMixinBase):
         @property
@@ -23,13 +21,7 @@ try:
             return Config
 
 
-    class StateMixin(StateMixinBase):
-        @property
-        def state_class(self):
-            return State
-
-
-    class ProxyMixin(ConfigMixin, StateMixin):
+    class ProxyMixin(ConfigMixin):
         '''
         Mixin class to add convenience wrappers around methods of the generated
         `node.Proxy` class.
