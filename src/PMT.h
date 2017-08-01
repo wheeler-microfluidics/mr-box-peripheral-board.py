@@ -14,6 +14,16 @@ public:
     const uint8_t REFERENCE_ANALOG_PIN   = A0;  // Reference voltage pin
     const uint8_t SHUTTER_PIN            = 9;  //Shutter Pin (**active low**)
 
+    void PMT_begin() {
+        // Set shutter pin to output.
+        pinMode(SHUTTER_PIN, OUTPUT);
+        // Set MCP41050 digipot CS pin to output.
+        pinMode(MCP41050_CS_PIN, OUTPUT);
+        // XXX Set shutter closed by default.
+        pmt_close_shutter();
+        // Set MCP41050 digipot to 0;
+        pmt_set_pot(0);
+    }
 
 
     float pmt_reference_voltage() const {
