@@ -23,6 +23,7 @@
 #include "PMT.h"
 #include "Pump.h"
 #include "ZStage.h"
+#include "Max11210Adc.h"
 
 namespace mr_box_peripheral_board {
 
@@ -47,7 +48,8 @@ class Node :
 #endif  // #ifndef DISABLE_SERIAL
   public PMT,
   public Pump,
-  public base_node_rpc::ZStage {
+  public base_node_rpc::ZStage,
+  public Max11210Adc {
 public:
   typedef PacketParser<FixedPacket> parser_t;
 
@@ -58,7 +60,8 @@ public:
   Node() : BaseNode(),
            BaseNodeConfig<config_t>(mr_box_peripheral_board_Config_fields),
            Pump(),
-           base_node_rpc::ZStage() {
+           base_node_rpc::ZStage(),
+           Max11210Adc() {
     // XXX Turn on LED by default to indicate power is on.
     pinMode(LED_BUILTIN, OUTPUT);
   }
