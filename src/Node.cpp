@@ -9,6 +9,8 @@ void Node::begin() {
   config_.load();
 
   Serial.begin(57600);
+
+  MAX11210_begin();
 }
 
 }  // namespace mr_box_peripheral_board

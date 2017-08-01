@@ -57,6 +57,7 @@ options(
     rpc_classes=['mr_box_peripheral_board::PMT',
                  'mr_box_peripheral_board::Pump',
                  'base_node_rpc::ZStage',
+                 'mr_box_peripheral_board::Max11210Adc',
                  'mr_box_peripheral_board::Node'],
     setup=dict(name=PROPERTIES['name'],
                version=VERSION,
