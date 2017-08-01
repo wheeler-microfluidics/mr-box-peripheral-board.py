@@ -23,4 +23,6 @@ message Config {
    *      optional float my_float_field = 50;
    *      optional int32 my_int_field = 51;
    */
+  optional float zstage_down_position = 50 [default = 0];
+  optional float zstage_up_position   = 51 [default = 10.1];
 }

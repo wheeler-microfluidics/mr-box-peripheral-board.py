@@ -14,6 +14,9 @@ private:
   const int PIN_DIRECTION = A1;
   const int PIN_ENABLE = A3;
 
+  // Consider analog values less than a quarter of full 10-bit range as `LOW`.
+  const uint16_t ANALOG_LOW_THRESHOLD = 1024 / 4;
+
   /* XXX End-stops are connected to ADC inputs 6 and 7, which are **only**
    * analog inputs and may not be configured as outputs (see [here][1]).  This
    * also means that these pins **DO NOT** have internal pull-up resistors.
@@ -53,8 +56,8 @@ public:
    * Mutators */
   void zstage_reset() {
     state_.position = 0;
-    state_.motor_enabled = false;
-    state_.micro_stepping = true;
+    zstage_disable_motor();
+    zstage_enable_micro_stepping();
     state_.RPM = 50;
     state_.home_stop_enabled = true;
     state_.engaged_stop_enabled = false;
@@ -108,17 +111,15 @@ public:
       position = 0;
     }
 
-    int pulse = 150000 / RPM / state_.micro_stepping;
-    float steps = distance * 25. * float(state_.micro_stepping);
+    uint8_t micro_stepping = state_.micro_stepping ? 16 : 1;
+    int pulse = 150000 / RPM / float(micro_stepping);
+    float steps = distance * 25. * float(micro_stepping);
 
     for (int x = 0; x < steps; x++) {
       digitalWrite(PIN_STEP, HIGH);
       delayMicroseconds(pulse);
       digitalWrite(PIN_STEP, LOW);
       delayMicroseconds(pulse);
-      if (zstage_at_home() && !direction) {
-        break;
-      }
     }
 
     state_.position = position;
@@ -149,10 +150,12 @@ public:
   }
 
   void zstage_enable_micro_stepping() {
+    state_.micro_stepping = true;
     digitalWrite(PIN_MICRO_STEPPING, HIGH);
   }
 
   void zstage_disable_micro_stepping() {
+    state_.micro_stepping = false;
     digitalWrite(PIN_MICRO_STEPPING, LOW);
   }
 
@@ -171,7 +174,13 @@ public:
   bool zstage_engaged_stop_enabled() const { return state_.engaged_stop_enabled; }
 
   bool zstage_at_home() {
-    return state_.home_stop_enabled && (analogRead(PIN_END_STOP_1) < (1023 / 4));
+    return state_.home_stop_enabled && (analogRead(PIN_END_STOP_1) <
+                                        ANALOG_LOW_THRESHOLD);
+  }
+
+  bool zstage_engaged() {
+    return state_.engaged_stop_enabled && (analogRead(PIN_END_STOP_2) <
+                                           ANALOG_LOW_THRESHOLD);
   }
 };
 
