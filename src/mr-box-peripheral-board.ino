@@ -1,10 +1,8 @@
 #include "Arduino.h"
 #include "EEPROM.h"
 #include "Wire.h"
-#include "LinkedList.h"
 #include "FastDigital.h"
 #include "Memory.h"  // Memory utility functions, e.g., ram_free()
-#include <AlignedAlloc.h>
 #include "ArduinoRpc.h"
 #include "nanopb.h"
 #include "NadaMQ.h"  // Required replacing `#ifndef AVR` with `#if !defined(AVR) && !defined(__arm__)`

@@ -20,8 +20,6 @@
 #include <pb_cpp_api.h>
 #include <pb_validate.h>
 #include <pb_eeprom.h>
-#include <LinkedList.h>
-#include <AlignedAlloc.h>
 #include <FastDigital.h>
 #include "mr_box_peripheral_board_config_validate.h"
 #include "mr_box_peripheral_board_state_validate.h"
