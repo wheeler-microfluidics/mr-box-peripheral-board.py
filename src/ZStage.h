@@ -49,6 +49,8 @@ public:
     zstage_reset();
   }
 
+  /****************************************************************************
+   * Mutators */
   void zstage_reset() {
     state_.position = 0;
     state_.motor_enabled = false;
@@ -56,37 +58,6 @@ public:
     state_.RPM = 50;
     state_.home_stop_enabled = true;
     state_.engaged_stop_enabled = false;
-  }
-
-  bool zstage_set_position(float position) {
-    if (state_.motor_enabled) {
-      state_.position = position;
-      zstage_move_to(position);
-      return true;
-    }
-    return false;
-  }
-
-  void zstage_enable_motor() {
-    state_.motor_enabled = true;
-    digitalWrite(PIN_ENABLE, LOW);  // Enable
-  }
-
-  void zstage_disable_motor() {
-    state_.motor_enabled = false;
-    digitalWrite(PIN_ENABLE, HIGH);  // Disable
-  }
-
-  void zstage_enable_micro_stepping() {
-    digitalWrite(PIN_MICRO_STEPPING, HIGH);
-  }
-
-  void zstage_disable_micro_stepping() {
-    digitalWrite(PIN_MICRO_STEPPING, LOW);
-  }
-
-  bool zstage_at_home() {
-    return state_.home_stop_enabled && (analogRead(PIN_END_STOP_1) < (1023 / 4));
   }
 
   void zstage_home() {
@@ -152,6 +123,55 @@ public:
 
     state_.position = position;
     return position;
+  }
+
+  /*************************************************************
+   * Setters */
+  bool zstage_set_position(float position) {
+    if (state_.motor_enabled) {
+      state_.position = position;
+      zstage_move_to(position);
+      return true;
+    }
+    return false;
+  }
+
+  void zstage_set_RPM(uint32_t RPM) { state_.RPM = RPM; }
+
+  void zstage_enable_motor() {
+    state_.motor_enabled = true;
+    digitalWrite(PIN_ENABLE, LOW);  // Enable
+  }
+
+  void zstage_disable_motor() {
+    state_.motor_enabled = false;
+    digitalWrite(PIN_ENABLE, HIGH);  // Disable
+  }
+
+  void zstage_enable_micro_stepping() {
+    digitalWrite(PIN_MICRO_STEPPING, HIGH);
+  }
+
+  void zstage_disable_micro_stepping() {
+    digitalWrite(PIN_MICRO_STEPPING, LOW);
+  }
+
+  /*************************************************************
+   * Getters */
+  void zstage_enable_engaged_stop() { state_.engaged_stop_enabled = true; }
+  void zstage_disable_engaged_stop() { state_.engaged_stop_enabled = false; }
+  void zstage_enable_home_stop() { state_.home_stop_enabled = true; }
+  void zstage_disable_home_stop() { state_.home_stop_enabled = false; }
+
+  float zstage_position() const { return state_.position; }
+  bool zstage_motor_enabled() const { return state_.motor_enabled; }
+  bool zstage_micro_stepping() const { return state_.micro_stepping; }
+  uint32_t zstage_RPM() const { return state_.RPM; }
+  bool zstage_home_stop_enabled() const { return state_.home_stop_enabled; }
+  bool zstage_engaged_stop_enabled() const { return state_.engaged_stop_enabled; }
+
+  bool zstage_at_home() {
+    return state_.home_stop_enabled && (analogRead(PIN_END_STOP_1) < (1023 / 4));
   }
 };
 
