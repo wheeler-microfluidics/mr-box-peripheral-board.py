@@ -21,7 +21,6 @@ class Pump {
      */
 protected:
     FastAnalogWrite pump_frequency_;
-
 public:
     const uint8_t PIN_AMPLITUDE = 3;
     const uint8_t PIN_FREQUENCY = 4;

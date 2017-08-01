@@ -10,8 +10,9 @@ void Node::begin() {
 
   Serial.begin(57600);
 
-  MAX11210_begin();
   SPI.begin();
+  MAX11210_begin();
+  PMT_begin();
 }
 
 }  // namespace mr_box_peripheral_board

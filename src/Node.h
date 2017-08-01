@@ -59,7 +59,7 @@ public:
 
   Node() : BaseNode(),
            BaseNodeConfig<config_t>(mr_box_peripheral_board_Config_fields),
-           Pump(),
+           PMT(), Pump(),
            base_node_rpc::ZStage(),
            Max11210Adc() {
     // XXX Turn on LED by default to indicate power is on.
