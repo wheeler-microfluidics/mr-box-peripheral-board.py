@@ -169,7 +169,7 @@ public:
   bool zstage_engaged_stop_enabled() const { return state_.engaged_stop_enabled; }
 
   bool zstage_at_home() {
-    return state_.home_stop_enabled && (analogRead(PIN_END_STOP_1) < (1023 / 4));
+    return state_.home_stop_enabled && (analogRead(PIN_END_STOP_1) == 0);
   }
 };
 
