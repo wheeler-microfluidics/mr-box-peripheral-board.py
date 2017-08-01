@@ -108,17 +108,15 @@ public:
       position = 0;
     }
 
-    int pulse = 150000 / RPM / state_.micro_stepping;
-    float steps = distance * 25. * float(state_.micro_stepping);
+    uint8_t micro_stepping = state_.micro_stepping ? 16 : 1;
+    int pulse = 150000 / RPM / float(micro_stepping);
+    float steps = distance * 25. * float(micro_stepping);
 
     for (int x = 0; x < steps; x++) {
       digitalWrite(PIN_STEP, HIGH);
       delayMicroseconds(pulse);
       digitalWrite(PIN_STEP, LOW);
       delayMicroseconds(pulse);
-      if (zstage_at_home() && !direction) {
-        break;
-      }
     }
 
     state_.position = position;
