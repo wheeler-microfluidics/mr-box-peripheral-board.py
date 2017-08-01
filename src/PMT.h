@@ -14,6 +14,14 @@ public:
     const uint8_t REFERENCE_ANALOG_PIN   = 14;  // Reference voltage pin
     const uint8_t SHUTTER_PIN            = 2;  //Shutter Pin (**active low**)
 
+
+    float pmt_reference_voltage() const {
+        // read the adc value
+        int sensorValue = analogRead(REFERENCE_ANALOG_PIN);
+        // convert the adc value
+        return sensorValue * (3.3 / 1023.0);
+    }
+
     float pmt_set_pot(uint8_t value) {
         /*
          * Parameters
@@ -32,10 +40,7 @@ public:
         digitalWrite(MCP41050_CS_PIN, HIGH);
         SPI.endTransaction();
 
-        // read the adc value
-        int sensorValue = analogRead(REFERENCE_ANALOG_PIN);
-        // convert the adc value
-        return sensorValue * (3.3 / 1023.0);
+        return pmt_reference_voltage();
     }
 
     void pmt_open_shutter() { digitalWrite(SHUTTER_PIN, LOW); }
