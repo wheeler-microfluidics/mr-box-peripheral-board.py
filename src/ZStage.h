@@ -56,8 +56,8 @@ public:
    * Mutators */
   void zstage_reset() {
     state_.position = 0;
-    state_.motor_enabled = false;
-    state_.micro_stepping = true;
+    zstage_disable_motor();
+    zstage_enable_micro_stepping();
     state_.RPM = 50;
     state_.home_stop_enabled = true;
     state_.engaged_stop_enabled = false;
@@ -150,10 +150,12 @@ public:
   }
 
   void zstage_enable_micro_stepping() {
+    state_.micro_stepping = true;
     digitalWrite(PIN_MICRO_STEPPING, HIGH);
   }
 
   void zstage_disable_micro_stepping() {
+    state_.micro_stepping = false;
     digitalWrite(PIN_MICRO_STEPPING, LOW);
   }
 
