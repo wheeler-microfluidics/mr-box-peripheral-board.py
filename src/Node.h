@@ -22,11 +22,13 @@
 #include <pb_eeprom.h>
 #include <LinkedList.h>
 #include <AlignedAlloc.h>
+#include <FastDigital.h>
 #include "mr_box_peripheral_board_config_validate.h"
 #include "mr_box_peripheral_board_state_validate.h"
 #include "MrBoxPeripheralBoard/config_pb.h"
 #include "MrBoxPeripheralBoard/state_pb.h"
 #include "PMT.h"
+#include "Pump.h"
 
 namespace mr_box_peripheral_board {
 
@@ -54,7 +56,8 @@ class Node :
   public BaseNodeSerialHandler,
 #endif  // #ifndef DISABLE_SERIAL
   public BaseNodeI2cHandler<base_node_rpc::i2c_handler_t>,
-  public PMT {
+  public PMT,
+  public Pump {
 public:
   typedef PacketParser<FixedPacket> parser_t;
 
@@ -67,7 +70,8 @@ public:
 
   Node() : BaseNode(),
            BaseNodeConfig<config_t>(mr_box_peripheral_board_Config_fields),
-           BaseNodeState<state_t>(mr_box_peripheral_board_State_fields) {
+           BaseNodeState<state_t>(mr_box_peripheral_board_State_fields),
+           Pump() {
     // XXX Turn on LED by default to indicate power is on.
     pinMode(LED_BUILTIN, OUTPUT);
   }
@@ -114,7 +118,9 @@ public:
   void on_tick() {}
 
   /** Called periodically from the main program loop. */
-  void loop() {}
+  void loop() {
+    pump_update();
+  }
 
   // ##########################################################################
   // # Accessor methods
