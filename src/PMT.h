@@ -21,6 +21,7 @@ public:
          * value : uint8_t
          *     Digital potentiometer value, 0-255.
          */
+        SPI.beginTransaction(SPISettings(3000000, MSBFIRST, SPI_MODE0));
         // take the SS pin low to select the chip:
         digitalWrite(MCP41050_CS_PIN, LOW);
         // send Command to write value and enable the pot:
@@ -29,6 +30,7 @@ public:
         SPI.transfer(value);
         // take the SS pin high to de-select the chip:
         digitalWrite(MCP41050_CS_PIN, HIGH);
+        SPI.endTransaction();
 
         // read the adc value
         int sensorValue = analogRead(REFERENCE_ANALOG_PIN);

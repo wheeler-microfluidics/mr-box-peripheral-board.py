@@ -3,11 +3,11 @@
 namespace mr_box_peripheral_board {
 
 Max11210Adc::Max11210Adc() {
-    max_11210_adc_spi_settings_ = SPISettings(3000000, MSBFIRST, SPI_MODE0);  //SPI CLK set to 4MHz, ADC max 5MHz
+    //SPI CLK set to 4MHz, ADC max 5MHz
+    max_11210_adc_spi_settings_ = SPISettings(3000000, MSBFIRST, SPI_MODE0);
 }
 
 void Max11210Adc::MAX11210_begin(void){
-    SPI.begin();
     MAX11210_setDefault();
     MAX11210_setLineFreq(60);  // 60 Hz
     MAX11210_setInputRange(INPUT_RANGE_UNIPOLAR);
