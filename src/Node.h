@@ -22,6 +22,7 @@
 #include "MrBoxPeripheralBoard/config_pb.h"
 #include "PMT.h"
 #include "Pump.h"
+#include "ZStage.h"
 
 namespace mr_box_peripheral_board {
 
@@ -45,7 +46,8 @@ class Node :
   public BaseNodeSerialHandler,
 #endif  // #ifndef DISABLE_SERIAL
   public PMT,
-  public Pump {
+  public Pump,
+  public base_node_rpc::ZStage {
 public:
   typedef PacketParser<FixedPacket> parser_t;
 
@@ -55,7 +57,8 @@ public:
 
   Node() : BaseNode(),
            BaseNodeConfig<config_t>(mr_box_peripheral_board_Config_fields),
-           Pump() {
+           Pump(),
+           base_node_rpc::ZStage() {
     // XXX Turn on LED by default to indicate power is on.
     pinMode(LED_BUILTIN, OUTPUT);
   }

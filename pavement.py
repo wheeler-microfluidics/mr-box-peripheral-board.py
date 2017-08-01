@@ -49,11 +49,14 @@ options(
     rpc_module=rpc_module,
     PROPERTIES=PROPERTIES,
     LIB_PROPERTIES=LIB_PROPERTIES,
+    # Classes inherited from headers in `BaseNodeRpc` Arduino library.
     base_classes=['BaseNodeSerialHandler',
                   'BaseNodeEeprom',
                   'BaseNodeConfig<ConfigMessage, Address>'],
+    # Classes inherited from headers within sketch directory.
     rpc_classes=['mr_box_peripheral_board::PMT',
                  'mr_box_peripheral_board::Pump',
+                 'base_node_rpc::ZStage',
                  'mr_box_peripheral_board::Node'],
     setup=dict(name=PROPERTIES['name'],
                version=VERSION,
