@@ -36,8 +36,8 @@ public:
         return sensorValue * (3.3 / 1023.0);
     }
 
-    void pmt_activate_shutter() { digitalWrite(SHUTTER_PIN, LOW); }
-    void pmt_deactivate_shutter() { digitalWrite(SHUTTER_PIN, HIGH); }
+    void pmt_open_shutter() { digitalWrite(SHUTTER_PIN, LOW); }
+    void pmt_close_shutter() { digitalWrite(SHUTTER_PIN, HIGH); }
 };
 
 }  // namespace mr_box_peripheral_board {
