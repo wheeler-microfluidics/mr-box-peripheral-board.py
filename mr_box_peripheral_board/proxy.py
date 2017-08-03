@@ -38,7 +38,15 @@ try:
 
             @position.setter
             def position(self, value):
-                self.update_state(position=value)
+                '''
+                Move z-stage to specified position.
+
+                **Note** Unlike the other properties, this does not directly
+                modify the member variable on the device.  Instead, this relies
+                on the ``position`` variable being updated by the device once
+                the actual movement is complete.
+                '''
+                self.move_to(value)
 
             @property
             def motor_enabled(self):
@@ -106,6 +114,11 @@ try:
                     else:
                         getattr(self.parent,
                                 'zstage_set_{0}'.format(key_i))(value_i)
+
+            def move_to(self, position):
+                self.motor_enabled = True
+                self.parent.zstage_move_to(position)
+                self.motor_enabled = False
 
         def __init__(self, *args, **kwargs):
             super(ProxyMixin, self).__init__(*args, **kwargs)
