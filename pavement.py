@@ -68,9 +68,11 @@ options(
                license='BSD',
                install_requires=['base-node-rpc>=0.23'],
                include_package_data=True,
+               package_data={'mr_box_peripheral_board.notebooks': '*.ipynb'},
                packages=['mr_box_peripheral_board',
+                         'mr_box_peripheral_board.bin',
                          'mr_box_peripheral_board.notebooks',
-                         'mr_box_peripheral_board.bin']))
+                         'mr_box_peripheral_board.ui']))
 
 
 @task

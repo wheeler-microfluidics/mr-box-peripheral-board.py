@@ -4,5 +4,6 @@ include version.py
 include pavement.py
 include paver-minilib.zip
 include setup.py
-recursive-include hv_switching_board *
+recursive-include mr_box_peripheral_board *
+recursive-exclude mr_box_peripheral_board .ipynb_checkpoints/*
 prune *.pyc
