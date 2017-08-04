@@ -1,21 +1,19 @@
-import gobject
-import gtk
+import re
+import threading
 
 from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanvas
 from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as NavigationToolbar
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import threading
 from pygtkhelpers.delegates import SlaveView
 from serial_device.or_event import OrEvent
-
+import gobject
+import gtk
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import matplotlib.ticker
+import numpy as np
+import pandas as pd
 import si_prefix as si
 
-A_formatter = mpl.ticker.FuncFormatter(lambda x, *args: '%sA' %
-                                       si.si_format(x, 2))
 s_formatter = mpl.ticker.FuncFormatter(lambda x, *args: '%ss' %
                                        si.si_format(x))
 
@@ -38,6 +36,8 @@ class StreamingPlot(SlaveView):
 
         self.data_ready = threading.Event()
         self.stop_event = threading.Event()
+        self.started = threading.Event()
+
         self.line = None
         self.axis = None
         self.data_func = data_func
@@ -60,8 +60,9 @@ class StreamingPlot(SlaveView):
         vbox.pack_start(toolbar, False, False)
         self.stop_event.clear()
         np.random.seed(0)
+
+        # Use SI prefix and seconds units for x (i.e., time) axis.
         self.axis.xaxis.set_major_formatter(s_formatter)
-        self.axis.yaxis.set_major_formatter(A_formatter)
 
         self.start_button = gtk.Button('Start')
         self.start_button.connect("clicked", lambda *args: self.start())
@@ -81,11 +82,11 @@ class StreamingPlot(SlaveView):
             button_box.pack_start(widget_i, False, False)
         vbox.pack_start(button_box, False, False)
 
-        self.axis.set_ylabel('Current')
         self.axis.set_xlabel('Time')
 
     def pause(self):
         self.stop_event.set()
+        self.started.clear()
 
     def reset(self):
         self.line = None
@@ -99,6 +100,7 @@ class StreamingPlot(SlaveView):
             line_i.remove()
         def _reset_ui(*args):
             self.data_ready.clear()
+            self.started.clear()
             self.start_button.set_label('Start')
             self.clear_button.props.sensitive = False
             self.fig.canvas.draw()
@@ -113,17 +115,42 @@ class StreamingPlot(SlaveView):
                 if self.data_ready.is_set():
                     self.data_ready.clear()
                     plot_data = pd.concat(self.data)
+
+                    # Extract y-axis name and unit from data series name.
+                    #
+                    # Supported formats:
+                    #
+                    #     "<name> (<unit>)"
+                    #     "<name>"
+                    #     "(<unit>)"
+                    match = re.search(r'(?P<name>.*\w)?\s*'
+                                      r'(\((?P<unit>[^\)]+)\))?$',
+                                      plot_data.name or '')
+                    unit = match.group('unit') if match.group('unit') else ''
+                    if match.group('name'):
+                        self.axis.set_ylabel(match.group('name'))
+                    # Use SI prefix and infer units (if available) from data.
+                    y_formatter = mpl.ticker.FuncFormatter(lambda x, *args:
+                                                            '%s%s' %
+                                                           (si.si_format(x, 2),
+                                                            unit))
+                    self.axis.yaxis.set_major_formatter(y_formatter)
+
                     absolute_times = plot_data.index.to_series()
+                    # Compute time relative to time of first measurement.
                     relative_times = ((absolute_times - absolute_times.iloc[0])
                                       .dt.total_seconds())
                     plot_data.index = relative_times
                     if self.line is None:
+                        # No data has been plotted yet.  Plot new line to axis.
                         self.line = self.axis.plot(plot_data.index.values,
                                                    plot_data.values)[0]
                     else:
+                        # Update existing plot line with new data points.
                         self.line.set_data(plot_data.index.values,
                                            plot_data.values)
 
+                    # Schedule draw to run in main GTK thread.
                     def _draw_i(axis, plot_data):
                         axis.relim()
                         axis.set_xlim(right=plot_data.index[-1])
@@ -131,9 +158,13 @@ class StreamingPlot(SlaveView):
                         axis.autoscale_view(True, True, True)
                         axis.get_figure().canvas.draw()
                     gobject.idle_add(_draw_i, self.axis, plot_data)
+
                 if self.stop_event.is_set():
+                    # Stop has been requested.
                     break
 
+            # Schedule UI buttons to update in main GTK thread based on
+            # **paused/stopped state**.
             def _button_states():
                 self.start_button.set_label('Continue')
                 self.start_button.props.sensitive = True
@@ -141,6 +172,8 @@ class StreamingPlot(SlaveView):
                 self.stop_button.props.sensitive = False
             gobject.idle_add(_button_states)
 
+        # Schedule UI buttons to update in main GTK thread based on
+        # **running/started state**.
         def _button_states():
             self.start_button.props.sensitive = False
             self.clear_button.props.sensitive = False
@@ -161,9 +194,12 @@ class StreamingPlot(SlaveView):
                                              self.data_ready, self.data))
         data_thread.daemon = True
         data_thread.start()
-
+        self.started.set()
 
     def on_resize(self):
+        '''
+        Schedule re-layout of figure in main GTK loop to fit new widget size.
+        '''
         def _tight_layout(*args):
             try:
                 self.fig.tight_layout()
