@@ -38,6 +38,8 @@ class StreamingPlot(SlaveView):
 
         self.data_ready = threading.Event()
         self.stop_event = threading.Event()
+        self.started = threading.Event()
+
         self.line = None
         self.axis = None
         self.data_func = data_func
@@ -86,6 +88,7 @@ class StreamingPlot(SlaveView):
 
     def pause(self):
         self.stop_event.set()
+        self.started.clear()
 
     def reset(self):
         self.line = None
@@ -99,6 +102,7 @@ class StreamingPlot(SlaveView):
             line_i.remove()
         def _reset_ui(*args):
             self.data_ready.clear()
+            self.started.clear()
             self.start_button.set_label('Start')
             self.clear_button.props.sensitive = False
             self.fig.canvas.draw()
@@ -161,6 +165,7 @@ class StreamingPlot(SlaveView):
                                              self.data_ready, self.data))
         data_thread.daemon = True
         data_thread.start()
+        self.started.set()
 
 
     def on_resize(self):
