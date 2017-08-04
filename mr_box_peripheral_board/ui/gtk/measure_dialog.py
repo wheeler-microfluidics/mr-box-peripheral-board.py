@@ -9,6 +9,7 @@ import gtk
 import matplotlib as mpl
 
 from .streaming_plot import StreamingPlot
+from ...notebooks.max11210_adc_ui import MAX11210_read
 
 
 def _generate_data(stop_event, data_ready, data):
@@ -141,3 +142,40 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
             return pd.concat(view.data)
         else:
             return None
+
+
+def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1)):
+    '''
+    Parameters
+    ----------
+    proxy : mr_box_peripheral_board.SerialProxy
+    delta_t : datetime.timedelta
+        Time between ADC measurements.
+
+    Returns
+    -------
+    function
+        Function suitable for use with the :func:`measure_dialog` function.
+    '''
+    def _read_adc(stop_event, data_ready, data):
+        '''
+        Parameters
+        ----------
+        stop_event : threading.Event
+            Function returns when :data:`stop_event` is set.
+        data_ready : threading.Event
+            Function sets :data:`data_ready` whenever new data is available.
+        data : list
+            Function appends new data to :data:`data` before setting
+            :data:`data_ready`.
+            delta_t = dt.timedelta(seconds=.1)
+        '''
+        while True:
+            data_i = MAX11210_read(proxy, rate=1,
+                                   duration_s=delta_t.total_seconds())
+            data_i /= (1 << 24) - 1.
+            data.append(data_i)
+            data_ready.set()
+            if stop_event.is_set():
+                break
+    return _read_adc
