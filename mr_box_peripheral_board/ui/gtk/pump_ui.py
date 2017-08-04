@@ -9,8 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class PumpControl(SlaveView):
-    def __init__(self, proxy):
+    def __init__(self, proxy, frequency_hz=1000, duration_s=3):
         self.proxy = proxy
+        self.duration_s = duration_s
+        self.frequency_hz = frequency_hz
         super(PumpControl, self).__init__()
 
     def create_ui(self):
@@ -25,10 +27,12 @@ class PumpControl(SlaveView):
         # Note that the page_size value only makes a difference for
         # scrollbar widgets, and the highest value you'll get is actually
         # (upper - page_size).
-        self.frequency_adj = gtk.Adjustment(1e3, 1, 1e4 + 10, 0.1, 1.0, 10)
+        self.frequency_adj = gtk.Adjustment(self.frequency_hz, 1, 1e4 + 10,
+                                            0.1, 1.0, 10)
         self.frequency_scale = gtk.HScale(self.frequency_adj)
 
-        self.duration_adj = gtk.Adjustment(3, 0, 120 + 10, 0.1, 1.0, 10)
+        self.duration_adj = gtk.Adjustment(self.duration_s, 0, 120 + 10, 0.1,
+                                           1.0, 10)
         self.duration_scale = gtk.HScale(self.duration_adj)
 
         for label_i, scale_i in ((gtk.Label("Frequency (Hz):"),
@@ -82,6 +86,7 @@ class PumpControl(SlaveView):
         def _pump():
             gobject.idle_add(self._disable_widgets)
             if self.proxy is not None:
+                self.proxy.pump_frequency_set(self.frequency_adj.value)
                 self.proxy.pump_activate()
             self.pump_cancel.props.sensitive = True
             try:
