@@ -10,10 +10,6 @@ try:
     from .config import Config
 except (ImportError, TypeError), exception:
     warnings.warn(str(exception))
-try:
-    from .state import State
-except (ImportError, TypeError), exception:
-    warnings.warn(str(exception))
 
 
 def package_path():
