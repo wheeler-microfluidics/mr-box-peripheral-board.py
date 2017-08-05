@@ -66,8 +66,16 @@ public:
   void zstage_home() {
     if (!state_.home_stop_enabled) return;
 
+    // check if the motor is enabled
+    bool motor_enabled = state_.motor_enabled;
     state_.position = 100;
+
+    // enable it before homing if necessary
+    if (!state_.motor_enabled) zstage_enable_motor();
     while (!zstage_at_home()) { zstage_move(1., 25., false); }
+
+    // if the motor was initially disabled, disable it again
+    if (!motor_enabled) zstage_disable_motor();
     state_.position = 0;
   }
 
