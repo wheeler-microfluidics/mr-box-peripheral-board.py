@@ -8,8 +8,8 @@ import gobject
 import gtk
 import matplotlib as mpl
 
-from .streaming_plot import StreamingPlot
-from ...notebooks.max11210_adc_ui import MAX11210_read
+from streaming_plot import StreamingPlot
+from ...max11210_adc_ui import MAX11210_read
 
 
 def _generate_data(stop_event, data_ready, data):
