@@ -171,7 +171,6 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1)):
             delta_t = dt.timedelta(seconds=.1)
         '''
         #TODO rate = make sampling rate dynamic , add gain
-        Vref = 3.0
         dgain = 1.0
         #TODO Open and Close the shutter between and not during the measurement
         #Start the ADC
@@ -180,7 +179,7 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1)):
             data_i = MAX11210_read(proxy, rate=1, adc_dgain=dgain,
                                    duration_s=delta_t.total_seconds())
             #Convert data to Voltage, 24bit ADC with Vref = 3.0 V and digital gain = 1
-            data_i /=  ((2 ** 24 - 1)*(Vref/dgain))
+            data_i /=  ((2 ** 24 - 1)/(3.0/dgain))
             #Convert Voltage to Current, 30kOhm Resistor
             data_i /= 30e3
             data.append(data_i)
