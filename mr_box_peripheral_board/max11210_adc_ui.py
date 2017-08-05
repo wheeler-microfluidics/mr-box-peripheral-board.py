@@ -2,6 +2,8 @@ import datetime as dt
 
 import pandas as pd
 
+import logging
+from collections import OrderedDict
 
 SYSOR = 0b10000000
 OR_ = 0b00001000
@@ -152,10 +154,41 @@ def format_STAT1(STAT1):
         rdy = "In Progress\n"
     return ("Gain Over Range: "+gor+"Sampling Rate: "+rate+"Input Signal Over Max: "+mor+"Input Signal Under Min: "+ur+"Modulator Status: "+mstat+"ADC Status: "+rdy)
 
+def MAX11210_begin(proxy):
+    LINE_FREQ = 60 # 60 Hz
+    INPUT_RANGE_UNIPOLAR = 1
+    INPUT_RANGE_BIPOLAR = 2
+    CLOCK_SOURCE_EXTERNAL = 1
+    CLOCK_SOURCE_INTERNAL = 2
+    FORMAT_OFFSET = 1
+    FORMAT_TWOS_COMPLEMENT = 2
+    CONVERSION_MODE_SINGLE = 1
+    CONVERSION_MODE_CONTINUOUS = 2
 
-def MAX11210_read(proxy, rate, duration_s):
+    proxy.MAX11210_setDefault();
+    proxy.MAX11210_setLineFreq(LINE_FREQ);
+    proxy.MAX11210_setInputRange(INPUT_RANGE_UNIPOLAR);
+    proxy.MAX11210_setClockSource(CLOCK_SOURCE_INTERNAL);
+    proxy.MAX11210_setEnableRefBuf(True);
+    proxy.MAX11210_setEnableSigBuf(True);
+    proxy.MAX11210_setFormat(FORMAT_OFFSET);
+    proxy.MAX11210_setConvMode(CONVERSION_MODE_SINGLE);
+    proxy.MAX11210_selfCal();
+    proxy.MAX11210_sysOffsetCal();
+
+    logger = logging.getLogger(__name__)
+    calibration_settings = \
+    pd.Series(OrderedDict([('SelfCalGain', proxy.MAX11210_getSelfCalGain()),
+                           ('SelfCalOffset', proxy.MAX11210_getSelfCalOffset()),
+                           ('SysGainCal', proxy.MAX11210_getSysGainCal()),
+                           ('SysOffsetCal', proxy.MAX11210_getSysOffsetCal())]))
+    logger.info(calibration_settings)
+
+def MAX11210_read(proxy, rate, adc_dgain , duration_s):
     assert(rate in (1, 2, 5, 10, 15, 30, 60, 120))
+    assert(adc_dgain in (1, 2, 4, 8, 16))
     proxy.MAX11210_setConvMode(1)
+    proxy.MAX11210_setGain(adc_dgain)
 
     proxy.pin_mode(9, 1)  # Set pin to output.
     proxy.pmt_open_shutter()
