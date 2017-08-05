@@ -129,7 +129,7 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
                 event.wait()
                 if view.started.is_set():
                     stop_func = _auto_close if auto_close else view.pause
-                    gobject.timeout_add(duration_s, stop_func)
+                    gobject.timeout_add(duration_s * 1000, stop_func)
             stop_schedule_thread = threading.Thread(target=_schedule_stop)
             stop_schedule_thread.daemon = True
             stop_schedule_thread.start()
@@ -142,7 +142,7 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
             return pd.concat(view.data)
         else:
             return None
-
+        return False
 
 def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1)):
     '''
@@ -170,10 +170,18 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1)):
             :data:`data_ready`.
             delta_t = dt.timedelta(seconds=.1)
         '''
+        #TODO rate = make sampling rate dynamic , add gain
+        dgain = 1.0
+        #TODO Open and Close the shutter between and not during the measurement
+        #Start the ADC
+
         while True:
-            data_i = MAX11210_read(proxy, rate=1,
+            data_i = MAX11210_read(proxy, rate=1, adc_dgain=dgain,
                                    duration_s=delta_t.total_seconds())
-            data_i /= (1 << 24) - 1.
+            #Convert data to Voltage, 24bit ADC with Vref = 3.0 V and digital gain = 1
+            data_i /=  ((2 ** 24 - 1)/(3.0/dgain))
+            #Convert Voltage to Current, 30kOhm Resistor
+            data_i /= 30e3
             data.append(data_i)
             data_ready.set()
             if stop_event.is_set():
