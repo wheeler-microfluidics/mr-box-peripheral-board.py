@@ -175,7 +175,8 @@ def MAX11210_begin(proxy):
     proxy.MAX11210_setConvMode(CONVERSION_MODE_SINGLE);
     proxy.MAX11210_selfCal();
     proxy.MAX11210_sysOffsetCal();
-
+    proxy.MAX11210_sysGainCal();
+    
     logger = logging.getLogger(__name__)
     calibration_settings = \
     pd.Series(OrderedDict([('SelfCalGain', proxy.MAX11210_getSelfCalGain()),
