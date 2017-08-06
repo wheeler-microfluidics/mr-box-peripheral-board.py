@@ -80,6 +80,19 @@ try:
             def home_stop_enabled(self, value):
                 self.update_state(home_stop_enabled=value)
 
+            def engage(self):
+                self.parent.zstage_move_to(
+                    self.parent.config['zstage_up_position'])
+
+            def home(self):
+                self.parent.zstage_home()
+
+            @property
+            def engaged(self):
+                # TODO: if the engaged_stop is enabled, use it
+                # This functionality could also be pushed into the firmware
+                return self.state['position'] == self.parent.config['zstage_up_position']
+
             @property
             def engaged_stop_enabled(self):
                 return self.parent.zstage_engaged_stop_enabled()
@@ -116,9 +129,7 @@ try:
                                 'zstage_set_{0}'.format(key_i))(value_i)
 
             def move_to(self, position):
-                self.motor_enabled = True
                 self.parent.zstage_move_to(position)
-                self.motor_enabled = False
 
         def __init__(self, *args, **kwargs):
             super(ProxyMixin, self).__init__(*args, **kwargs)

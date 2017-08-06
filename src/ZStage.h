@@ -66,16 +66,8 @@ public:
   void zstage_home() {
     if (!state_.home_stop_enabled) return;
 
-    // check if the motor is enabled
-    bool motor_enabled = state_.motor_enabled;
     state_.position = 100;
-
-    // enable it before homing if necessary
-    if (!state_.motor_enabled) zstage_enable_motor();
     while (!zstage_at_home()) { zstage_move(1., 25., false); }
-
-    // if the motor was initially disabled, disable it again
-    if (!motor_enabled) zstage_disable_motor();
     state_.position = 0;
   }
 
@@ -105,6 +97,11 @@ public:
      * float
      *     New position.
      */
+     // check if the motor is enabled when the funciton was called
+    bool prev_motor_enabled = zstage_motor_enabled();
+    // enable it before moving if necessary
+    if (!zstage_motor_enabled()) zstage_enable_motor();
+
     float position = state_.position;
     if (direction){
       digitalWrite(PIN_DIRECTION, HIGH);
@@ -131,18 +128,18 @@ public:
     }
 
     state_.position = position;
+
+    // if the motor was initially disabled, disable it again
+    if (!prev_motor_enabled) zstage_disable_motor();
     return position;
   }
 
   /*************************************************************
    * Setters */
   bool zstage_set_position(float position) {
-    if (state_.motor_enabled) {
-      state_.position = position;
-      zstage_move_to(position);
-      return true;
-    }
-    return false;
+    state_.position = position;
+    zstage_move_to(position);
+    return true;
   }
 
   void zstage_set_RPM(uint32_t RPM) { state_.RPM = RPM; }
@@ -187,6 +184,8 @@ public:
   }
 
   bool zstage_engaged() {
+    // TODO: if state_.engaged_stop_enabled == false, check if the position
+    // matches the config_._.zstage_up_position
     return state_.engaged_stop_enabled && (analogRead(PIN_END_STOP_2) <
                                            ANALOG_LOW_THRESHOLD);
   }
