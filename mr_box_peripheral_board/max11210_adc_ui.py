@@ -176,14 +176,14 @@ def MAX11210_begin(proxy):
     proxy.MAX11210_selfCal();
     proxy.MAX11210_sysOffsetCal();
     proxy.MAX11210_sysGainCal();
-    
+
     logger = logging.getLogger(__name__)
     calibration_settings = \
-    pd.Series(OrderedDict([('SelfCalGain', proxy.MAX11210_getSelfCalGain()),
-                           ('SelfCalOffset', proxy.MAX11210_getSelfCalOffset()),
-                           ('SysGainCal', proxy.MAX11210_getSysGainCal()),
-                           ('SysOffsetCal', proxy.MAX11210_getSysOffsetCal())]))
-    logger.info(calibration_settings)
+    pd.Series(OrderedDict([('Self-Calibration_Gain', proxy.MAX11210_getSelfCalGain()),
+                           ('Self-Calibration_Offset', proxy.MAX11210_getSelfCalOffset()),
+                           ('System_Gain', proxy.MAX11210_getSysGainCal()),
+                           ('System_Offset', proxy.MAX11210_getSysOffsetCal())]))
+    logger.info('\n%s' % calibration_settings)
 
 def MAX11210_read(proxy, rate, adc_dgain , duration_s):
     assert(rate in (1, 2, 5, 10, 15, 30, 60, 120))
@@ -207,3 +207,10 @@ def MAX11210_read(proxy, rate, adc_dgain , duration_s):
     finally:
         proxy.pmt_close_shutter()
     return pd.Series(readings, index=timestamps)
+
+def MAX11210_status():
+    logger = logging.getLogger(__name__)
+    logger.info('Status Register\n%s' % format_STAT1(proxy.MAX11210_getSTAT1()))
+    logger.info('Control Register 1\n%s' % format_CTRL1(proxy.MAX11210_getCTRL1()))
+    # logger.info('Control Register 1\n%s' % str(format(proxy.MAX11210_getCTRL2(),'b'))
+    logger.info('Control Register 3\n%s' % format_CTRL3(proxy.MAX11210_getCTRL3()))
