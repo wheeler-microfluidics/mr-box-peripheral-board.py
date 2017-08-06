@@ -3,7 +3,6 @@ from collections import OrderedDict
 from base_node_rpc.proxy import ConfigMixinBase
 import pandas as pd
 
-
 try:
     # XXX The `node` module containing the `Proxy` class definition is
     # generated from the `mr_box_peripheral_board::Node` class in
@@ -27,6 +26,14 @@ try:
         `node.Proxy` class.
         '''
         host_package_name = 'mr-box-peripheral-board'
+
+        def get_adc_calibration(self):
+            calibration_settings = \
+            pd.Series(OrderedDict([('Self-Calibration_Gain', self.MAX11210_getSelfCalGain()),
+                                   ('Self-Calibration_Offset', self.MAX11210_getSelfCalOffset()),
+                                   ('System_Gain', self.MAX11210_getSysGainCal()),
+                                   ('System_Offset', self.MAX11210_getSysOffsetCal())]))
+            return calibration_settings
 
         class ZStage(object):
             def __init__(self, parent):

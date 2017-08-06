@@ -178,12 +178,7 @@ def MAX11210_begin(proxy):
     proxy.MAX11210_sysGainCal();
 
     logger = logging.getLogger(__name__)
-    calibration_settings = \
-    pd.Series(OrderedDict([('Self-Calibration_Gain', proxy.MAX11210_getSelfCalGain()),
-                           ('Self-Calibration_Offset', proxy.MAX11210_getSelfCalOffset()),
-                           ('System_Gain', proxy.MAX11210_getSysGainCal()),
-                           ('System_Offset', proxy.MAX11210_getSysOffsetCal())]))
-    logger.info('\n%s' % calibration_settings)
+    logger.info('\n%s' % proxy.get_adc_calibration())
 
 def MAX11210_read(proxy, rate, adc_dgain , duration_s):
     assert(rate in (1, 2, 5, 10, 15, 30, 60, 120))
