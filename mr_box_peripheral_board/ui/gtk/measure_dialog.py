@@ -144,7 +144,7 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
             return None
         return False
 
-def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1)):
+def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1):
     '''
     Parameters
     ----------
@@ -157,6 +157,7 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1)):
     function
         Function suitable for use with the :func:`measure_dialog` function.
     '''
+    proxy.MAX11210_setGain(adc_dgain)
     def _read_adc(stop_event, data_ready, data):
         '''
         Parameters
@@ -170,16 +171,16 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1)):
             :data:`data_ready`.
             delta_t = dt.timedelta(seconds=.1)
         '''
-        #TODO rate = make sampling rate dynamic , add gain
-        dgain = 1.0
+        #TODO rate = make sampling rate dynamic
+        adc_rate=1
         #TODO Open and Close the shutter between and not during the measurement
         #Start the ADC
 
         while True:
-            data_i = MAX11210_read(proxy, rate=1, adc_dgain=dgain,
+            data_i = MAX11210_read(proxy, rate=adc_rate,
                                    duration_s=delta_t.total_seconds())
-            #Convert data to Voltage, 24bit ADC with Vref = 3.0 V and digital gain = 1
-            data_i /=  ((2 ** 24 - 1)/(3.0/dgain))
+            #Convert data to Voltage, 24bit ADC with Vref = 3.0 V
+            data_i /=  ((2 ** 24 - 1)/(3.0/adc_dgain))
             #Convert Voltage to Current, 30kOhm Resistor
             data_i /= 30e3
             data.append(data_i)
