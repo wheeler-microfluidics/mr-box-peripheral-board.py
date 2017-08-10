@@ -28,11 +28,13 @@ class StreamingPlot(SlaveView):
      2. **Data**: Start provided function to generate data and trigger event
         whenever new data is ready.
     '''
-    def __init__(self, data_func, data=None):
+    def __init__(self, data_func, data=None, si_units=True):
         if data is not None:
             self.data = data
         else:
             self.data = []
+        # If ``True``, format y-axis tick labels using SI units.
+        self.si_units = si_units
 
         self.data_ready = threading.Event()
         self.stop_event = threading.Event()
@@ -127,14 +129,23 @@ class StreamingPlot(SlaveView):
                                       r'(\((?P<unit>[^\)]+)\))?$',
                                       plot_data.name or '')
                     unit = match.group('unit') if match.group('unit') else ''
+
+                    # Infer units (if available) from data.
+                    if self.si_units:
+                        # Use SI prefix corresponding to each axis tick value
+                        # for units.
+                        yformat_func = (lambda x, *args: '%s%s' %
+                                        (si.si_format(x, 2), unit))
+                        y_formatter = mpl.ticker.FuncFormatter(yformat_func)
+                        self.axis.yaxis.set_major_formatter(y_formatter)
                     if match.group('name'):
-                        self.axis.set_ylabel(match.group('name'))
-                    # Use SI prefix and infer units (if available) from data.
-                    y_formatter = mpl.ticker.FuncFormatter(lambda x, *args:
-                                                            '%s%s' %
-                                                           (si.si_format(x, 2),
-                                                            unit))
-                    self.axis.yaxis.set_major_formatter(y_formatter)
+                        ylabel = match.group('name')
+                        if not self.si_units and unit:
+                            # Since SI prefixes are not selected, include
+                            # measurement unit in y-axis label instead of in
+                            # individual tick labels.
+                            ylabel += ' ({})'.format(unit)
+                        self.axis.set_ylabel(ylabel)
 
                     absolute_times = plot_data.index.to_series()
                     # Compute time relative to time of first measurement.

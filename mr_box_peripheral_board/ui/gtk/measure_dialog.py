@@ -55,7 +55,7 @@ def _generate_data(stop_event, data_ready, data):
 
 
 def measure_dialog(f_data, duration_s=None, auto_start=True,
-                   auto_close=True):
+                   auto_close=True, **kwargs):
     '''
     Launch a GTK dialog and plot data
 
@@ -90,6 +90,9 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
         pressed.
 
         Default is ``True``.
+    **kwargs : dict
+        Additional keyword arguments are passed to the construction of the
+        :class:`streaming_plot.StreamingPlot` view.
     '''
     # `StreamingPlot` class uses threads.  Need to initialize GTK to use
     # threads. See [here][1] for more information.
@@ -103,7 +106,7 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
         # Create dialog window to wrap PMT measurement view widget.
         dialog = gtk.Dialog()
         dialog.set_default_size(800, 600)
-        view = StreamingPlot(data_func=f_data)
+        view = StreamingPlot(data_func=f_data, **kwargs)
         dialog.get_content_area().pack_start(view.widget, True, True)
         dialog.connect('check-resize', lambda *args: view.on_resize())
         dialog.set_position(gtk.WIN_POS_MOUSE)
@@ -144,6 +147,7 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
             return None
         return False
 
+
 def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1):
     '''
     Parameters
@@ -183,6 +187,8 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1):
             data_i /=  ((2 ** 24 - 1)/(3.0/adc_dgain))
             #Convert Voltage to Current, 30kOhm Resistor
             data_i /= 30e3
+            # Set name to display units.
+            data_i.name = 'Current (A)'
             data.append(data_i)
             data_ready.set()
             if stop_event.is_set():
