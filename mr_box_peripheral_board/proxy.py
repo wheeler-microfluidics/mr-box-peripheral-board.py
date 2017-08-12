@@ -1,7 +1,11 @@
 from collections import OrderedDict
+import time
 
 from base_node_rpc.proxy import ConfigMixinBase
 import pandas as pd
+
+from .bin.upload import upload
+
 
 try:
     # XXX The `node` module containing the `Proxy` class definition is
@@ -179,12 +183,15 @@ try:
             if not 'settling_time_s' in kwargs:
                 kwargs['settling_time_s'] = 2.5
             super(ProxyMixin, self).__init__(*args, **kwargs)
+
+        def flash_firmware(self):
+            # currently, we're ignoring the hardware version, but eventually,
+            # we will want to pass it to upload()
+            self.terminate()
+            upload()
+            time.sleep(0.5)
+            self._connect()
                                     
-        @property
-        def port(self):
-            return self.serial_thread.protocol.port
-
-
 
 except (ImportError, TypeError):
     Proxy = None

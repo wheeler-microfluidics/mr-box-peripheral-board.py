@@ -2,6 +2,10 @@ from platformio_helpers.upload import upload_conda
 import platformio_helpers as pioh
 
 
+def upload():
+    upload_conda('mr-box-peripheral-board')
+     
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
 
@@ -14,5 +18,5 @@ if __name__ == '__main__':
                         choices=environments)
     args = parser.parse_args()
     extra_args = None if args.port is None else ['--port', args.port]
-    print upload_conda('mr-box-peripheral-board',
-                       env_name=args.hardware_version, extra_args=extra_args)
+    upload_conda('mr-box-peripheral-board',
+                 env_name=args.hardware_version, extra_args=extra_args)
