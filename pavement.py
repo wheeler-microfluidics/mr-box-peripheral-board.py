@@ -15,18 +15,15 @@ import platformio_helpers.develop
 # Make standard `setuptools.command` tasks available (e.g., `sdist`).
 install_distutils_tasks()
 
-# add the current directory as the first listing on the python path
-# so that we import the correct version.py
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-import version
 # Add package directory to Python path. This enables the use of
 # `mr_box_peripheral_board` functions for discovering, e.g., the
 # path to the Arduino firmware sketch source files.
 sys.path.append(path('.').abspath())
+from mr_box_peripheral_board.version import getVersion
 
 # Import project module.
 rpc_module = import_module('mr_box_peripheral_board')
-VERSION = version.getVersion()
+VERSION = getVersion()
 PROPERTIES = OrderedDict([('name', 'mr-box-peripheral-board'),
                           ('package_name', 'mr-box-peripheral-board'),
                           ('module_name', 'mr_box_peripheral_board'),
