@@ -173,6 +173,13 @@ try:
         pass
 
     class SerialProxy(ProxyMixin, _SerialProxy):
+        def __init__(self, *args, **kwargs):
+            if not 'baudrate' in kwargs:
+                kwargs['baudrate'] = 57600
+            if not 'settling_time_s' in kwargs:
+                kwargs['settling_time_s'] = 2.5
+            super(ProxyMixin, self).__init__(*args, **kwargs)
+                                    
         @property
         def port(self):
             return self.serial_thread.protocol.port
