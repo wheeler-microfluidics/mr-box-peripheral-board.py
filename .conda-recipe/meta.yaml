@@ -18,12 +18,11 @@ requirements:
     - paver
     - pip
     - platformio-framework-arduinoavr >=1.136.0
-    - platformio-helpers >=0.2
     - platformio-tool-scons
     - platformio-toolchain-atmelavr
     - pytables
     - python 2.7*
-    - base-node-rpc >=0.28
+    - base-node-rpc >=0.29
     - arduino-fast-digital
     - arduino-aligned-alloc
     - arduino-linked-list >=1.2.3
@@ -35,12 +34,11 @@ requirements:
     - paver
     - pip
     - platformio-framework-arduinoavr >=1.136.0
-    - platformio-helpers >=0.2
     - platformio-tool-scons
     - platformio-toolchain-atmelavr
     - pytables
     - python 2.7*
-    - base-node-rpc >=0.28
+    - base-node-rpc >=0.29
     - arduino-fast-digital
     - arduino-aligned-alloc
     - arduino-linked-list >=1.2.3
