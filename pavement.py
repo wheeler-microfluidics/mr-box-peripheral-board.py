@@ -31,7 +31,7 @@ PROPERTIES = OrderedDict([('base_node_software_version',
                           ('display_name', 'MR-Box peripherals'),
                           ('manufacturer', 'Wheeler Microfluidics Lab'),
                           ('software_version', VERSION),
-                          ('url', 'https://github.com/wheeler-microfluidics/mr-box-peripheral-board')])
+                          ('url', 'https://github.com/wheeler-microfluidics/mr-box-peripheral-board.py')])
 
 # XXX Properties used to generate Arduino library properties file.
 LIB_PROPERTIES = PROPERTIES.copy()
