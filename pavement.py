@@ -9,8 +9,6 @@ try:
     from base_node_rpc.pavement_base import *
 except ImportError:
     pass
-import platformio_helpers as pioh
-import platformio_helpers.develop
 
 # Make standard `setuptools.command` tasks available (e.g., `sdist`).
 install_distutils_tasks()
@@ -70,36 +68,3 @@ options(
                          'mr_box_peripheral_board.bin',
                          'mr_box_peripheral_board.notebooks',
                          'mr_box_peripheral_board.ui']))
-
-
-@task
-def develop_link():
-    import logging; logging.basicConfig(level=logging.INFO)
-    pioh.develop.link(working_dir=path('.').realpath(),
-                      package_name=PROPERTIES['package_name'])
-
-
-@task
-def develop_unlink():
-    import logging; logging.basicConfig(level=logging.INFO)
-    pioh.develop.unlink(working_dir=path('.').realpath(),
-                        package_name=PROPERTIES['package_name'])
-
-
-@task
-@needs('base_node_rpc.pavement_base.generate_all_code')
-def build_firmware():
-    sh('pio run')
-
-
-@task
-def upload():
-    sh('pio run --target upload --target nobuild')
-
-
-@task
-@needs('generate_setup', 'minilib', 'build_firmware',
-       'setuptools.command.sdist')
-def sdist():
-    """Overrides sdist to make sure that our setup.py is generated."""
-    pass
