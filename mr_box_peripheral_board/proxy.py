@@ -182,7 +182,7 @@ try:
                 kwargs['baudrate'] = 57600
             if not 'settling_time_s' in kwargs:
                 kwargs['settling_time_s'] = 2.5
-            super(ProxyMixin, self).__init__(*args, **kwargs)
+            super(SerialProxy, self).__init__(*args, **kwargs)
 
         def flash_firmware(self):
             # currently, we're ignoring the hardware version, but eventually,
