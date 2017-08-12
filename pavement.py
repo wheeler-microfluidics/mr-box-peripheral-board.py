@@ -6,6 +6,7 @@ import sys
 from paver.easy import task, needs, path, sh, options
 from paver.setuputils import install_distutils_tasks
 try:
+    import base_node_rpc
     from base_node_rpc.pavement_base import *
 except ImportError:
     pass
@@ -20,11 +21,14 @@ sys.path.append(path('.').abspath())
 from mr_box_peripheral_board.version import getVersion
 
 # Import project module.
-rpc_module = import_module('mr_box_peripheral_board')
+PROJECT_PREFIX = 'mr_box_peripheral_board'
+package_name = PROJECT_PREFIX.replace('_', '-')
+rpc_module = import_module(PROJECT_PREFIX)
 VERSION = getVersion()
-PROPERTIES = OrderedDict([('name', 'mr-box-peripheral-board'),
-                          ('package_name', 'mr-box-peripheral-board'),
-                          ('module_name', 'mr_box_peripheral_board'),
+PROPERTIES = OrderedDict([('base_node_software_version',
+                           base_node_rpc.__version__),
+                          ('package_name', package_name),
+                          ('display_name', 'MR-Box peripherals'),
                           ('manufacturer', 'Wheeler Microfluidics Lab'),
                           ('software_version', VERSION),
                           ('url', 'https://github.com/wheeler-microfluidics/mr-box-peripheral-board')])
@@ -54,7 +58,7 @@ options(
                  'base_node_rpc::ZStage',
                  'mr_box_peripheral_board::Max11210Adc',
                  'mr_box_peripheral_board::Node'],
-    setup=dict(name=PROPERTIES['name'],
+    setup=dict(name=PROPERTIES['package_name'],
                version=VERSION,
                description=LIB_PROPERTIES['short_description'],
                author=LIB_PROPERTIES['author'],
