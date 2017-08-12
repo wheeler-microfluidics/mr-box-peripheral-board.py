@@ -48,9 +48,10 @@ __all__ = ('getVersion')
 import re
 import subprocess
 import sys
+import os
 
-
-RELEASE_VERSION_FILE = 'RELEASE-VERSION'
+PACKAGE_PATH = os.path.abspath(os.path.join(__file__, '..'))
+RELEASE_VERSION_FILE = os.path.join(PACKAGE_PATH, 'RELEASE-VERSION')
 
 # http://www.python.org/dev/peps/pep-0386/
 _PEP386_SHORT_VERSION_RE = r'\d+(?:\.\d+)+(?:(?:[abc]|rc)\d+(?:\.\d+)*)?'
@@ -62,6 +63,10 @@ _GIT_DESCRIPTION_RE = r'^v(?P<ver>%s)-(?P<commits>\d+)-g(?P<sha>[\da-f]+)$' % (
 
 def readGitVersion():
     try:
+        # Note that we need to make sure we hare in the package directory
+        # when running git describe
+        previous_dir = os.path.abspath(os.curdir)
+        os.chdir(PACKAGE_PATH) 
         proc = subprocess.Popen(('git', 'describe', '--long',
                                  '--match', 'v[0-9]*.*'),
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -69,6 +74,7 @@ def readGitVersion():
         # XXX Required for Python 3 support.
         data = data.decode('utf-8')
         if proc.returncode:
+            os.chdir(previous_dir)
             return None
         ver = data.splitlines()[0].strip()
         proc = subprocess.Popen(('git', 'rev-parse', '--abbrev-ref', 'HEAD'),
@@ -76,6 +82,7 @@ def readGitVersion():
         branch, _ = proc.communicate()
         # XXX Required for Python 3 support.
         branch = branch.decode('utf-8')
+        os.chdir(previous_dir)
         if proc.returncode:
             return None
     except:
@@ -136,3 +143,4 @@ def getVersion():
 
 if __name__ == '__main__':
     print(getVersion())
+

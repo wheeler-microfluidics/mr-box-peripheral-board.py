@@ -23,14 +23,13 @@ requirements:
     - platformio-toolchain-atmelavr
     - pytables
     - python 2.7*
-    - base-node-rpc >=0.24.1
+    - base-node-rpc >=0.27
     - arduino-fast-digital
     - arduino-aligned-alloc
     - arduino-linked-list >=1.2.3
     - arduino-memory
 
   run:
-    - base-node >=0.8
     - future
     - nanopb-helpers >=0.6
     - paver
@@ -41,7 +40,7 @@ requirements:
     - platformio-toolchain-atmelavr
     - pytables
     - python 2.7*
-    - base-node-rpc >=0.24.1
+    - base-node-rpc >=0.27
     - arduino-fast-digital
     - arduino-aligned-alloc
     - arduino-linked-list >=1.2.3

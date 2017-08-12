@@ -2,6 +2,11 @@ from collections import OrderedDict
 import warnings
 
 from path_helpers import path
+
+from .version import getVersion
+
+__version__ = getVersion()
+
 try:
     from .proxy import Proxy, I2cProxy, SerialProxy
 except (ImportError, TypeError), exception:
