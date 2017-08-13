@@ -201,7 +201,7 @@ def MAX11210_read(proxy, rate , duration_s):
         proxy.pmt_close_shutter()
     return pd.Series(readings, index=timestamps)
 
-def MAX11210_status():
+def MAX11210_status(proxy):
     logger = logging.getLogger(__name__)
     logger.info('Status Register\n%s' % format_STAT1(proxy.MAX11210_getSTAT1()))
     logger.info('Control Register 1\n%s' % format_CTRL1(proxy.MAX11210_getCTRL1()))
