@@ -41,11 +41,11 @@ try:
 
         class ZStage(object):
             def __init__(self, parent):
-                self.parent = parent
+                self._parent = parent
 
             @property
             def position(self):
-                return self.parent.zstage_position()
+                return self._parent._zstage_position()
 
             @position.setter
             def position(self, value):
@@ -61,7 +61,7 @@ try:
 
             @property
             def motor_enabled(self):
-                return self.parent.zstage_motor_enabled()
+                return self._parent._zstage_motor_enabled()
 
             @motor_enabled.setter
             def motor_enabled(self, value):
@@ -69,7 +69,7 @@ try:
 
             @property
             def micro_stepping(self):
-                return self.parent.zstage_micro_stepping()
+                return self._parent._zstage_micro_stepping()
 
             @micro_stepping.setter
             def micro_stepping(self, value):
@@ -77,7 +77,7 @@ try:
 
             @property
             def RPM(self):
-                return self.parent.zstage_RPM()
+                return self._parent._zstage_RPM()
 
             @RPM.setter
             def RPM(self, value):
@@ -85,7 +85,7 @@ try:
 
             @property
             def home_stop_enabled(self):
-                return self.parent.zstage_home_stop_enabled()
+                return self._parent._zstage_home_stop_enabled()
 
             @home_stop_enabled.setter
             def home_stop_enabled(self, value):
@@ -96,29 +96,29 @@ try:
                 # TODO: if the engaged_stop is enabled, use it
                 # This functionality could also be pushed into the firmware
                 return (self.state['position'] ==
-                        self.parent.config['zstage_up_position'])
+                        self._parent.config['zstage_up_position'])
 
             def up(self):
                 if not self.is_up:
-                    self.parent.zstage_move_to(
-                        self.parent.config['zstage_up_position'])
+                    self._parent._zstage_move_to(
+                        self._parent.config['zstage_up_position'])
 
             @property
             def is_down(self):
                 return (self.state['position'] ==
-                        self.parent.config['zstage_down_position'])
+                        self._parent.config['zstage_down_position'])
 
             def down(self):
                 if not self.is_down:
-                    self.parent.zstage_move_to(
-                        self.parent.config['zstage_down_position'])
+                    self._parent._zstage_move_to(
+                        self._parent.config['zstage_down_position'])
 
             def home(self):
-                self.parent.zstage_home()
+                self._parent._zstage_home()
 
             @property
             def engaged_stop_enabled(self):
-                return self.parent.zstage_engaged_stop_enabled()
+                return self._parent._zstage_engaged_stop_enabled()
 
             @engaged_stop_enabled.setter
             def engaged_stop_enabled(self, value):
@@ -127,15 +127,15 @@ try:
             @property
             def state(self):
                 state = OrderedDict([('engaged_stop_enabled',
-                                      self.parent.zstage_engaged_stop_enabled()),
+                                      self._parent._zstage_engaged_stop_enabled()),
                                      ('home_stop_enabled',
-                                      self.parent.zstage_home_stop_enabled()),
+                                      self._parent._zstage_home_stop_enabled()),
                                      ('micro_stepping',
-                                      self.parent.zstage_micro_stepping()),
+                                      self._parent._zstage_micro_stepping()),
                                      ('motor_enabled',
-                                      self.parent.zstage_motor_enabled()),
-                                     ('position', self.parent.zstage_position()),
-                                     ('RPM', self.parent.zstage_RPM())])
+                                      self._parent._zstage_motor_enabled()),
+                                     ('position', self._parent._zstage_position()),
+                                     ('RPM', self._parent._zstage_RPM())])
                 return pd.Series(state, dtype=object)
 
             def update_state(self, **kwargs):
@@ -144,15 +144,15 @@ try:
                 for key_i, value_i in kwargs.iteritems():
                     if key_i in bool_fields:
                         action = 'enable' if value_i else 'disable'
-                        getattr(self.parent, 'zstage_{action}_{0}'
+                        getattr(self._parent, '_zstage_{action}_{0}'
                                 .format(key_i.replace('_enabled', ''),
                                         action=action))()
                     else:
-                        getattr(self.parent,
-                                'zstage_set_{0}'.format(key_i))(value_i)
+                        getattr(self._parent,
+                                '_zstage_set_{0}'.format(key_i))(value_i)
 
             def move_to(self, position):
-                self.parent.zstage_move_to(position)
+                self._parent._zstage_move_to(position)
 
         def __init__(self, *args, **kwargs):
             super(ProxyMixin, self).__init__(*args, **kwargs)
