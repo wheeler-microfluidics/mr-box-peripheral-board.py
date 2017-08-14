@@ -9,7 +9,7 @@ class ZStageUI(object):
 
         def zstage_move_to(position):
             proxy.zstage.motor_enabled = True
-            proxy.zstage_move_to(position)
+            proxy.zstage.move_to(position)
             proxy.zstage.motor_enabled = False
 
         # Set initial end-point positions based on positions stored in EEPROM
@@ -64,7 +64,7 @@ class ZStageUI(object):
             '''
             proxy.zstage.motor_enabled = True
             try:
-                proxy.zstage_home()
+                proxy.zstage.home()
             finally:
                 proxy.zstage.motor_enabled = False
             zstage_state.value = 'down'
