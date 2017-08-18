@@ -15,7 +15,7 @@ class ZStageUI(object):
         # Set initial end-point positions based on positions stored in EEPROM
         # configuration.
         config = proxy.config
-        zstage_range = ipw.FloatRangeSlider(min=0, max=11, step=.05,
+        zstage_range = ipw.FloatRangeSlider(min=0, max=30, step=.05,
                                             value=(config.zstage_down_position,
                                                    config.zstage_up_position),
                                             description='position range:')
