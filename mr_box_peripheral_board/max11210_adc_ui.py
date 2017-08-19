@@ -180,11 +180,11 @@ def MAX11210_begin(proxy):
     logger = logging.getLogger(__name__)
     logger.info('\n%s' % proxy.get_adc_calibration())
 
-def MAX11210_read(proxy, rate , dgain,  duration_s):
+def MAX11210_read(proxy, rate,  duration_s):
     assert(rate in (1, 2, 5, 10, 15, 30, 60, 120))
     proxy.MAX11210_setConvMode(1)
 
-    proxy.MAX11210_setGain(dgain)
+    # proxy.MAX11210_setGain(dgain)
 
     proxy.pin_mode(9, 1)  # Set pin to output.
     proxy.pmt_open_shutter()

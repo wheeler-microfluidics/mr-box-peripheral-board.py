@@ -148,7 +148,7 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
         return False
 
 
-def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1):
+def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1, adc_rate=1 ):
     '''
     Parameters
     ----------
@@ -175,8 +175,6 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1):
             :data:`data_ready`.
             delta_t = dt.timedelta(seconds=.1)
         '''
-        #TODO rate = make sampling rate dynamic
-        adc_rate=1
         #TODO Open and Close the shutter between and not during the measurement
         #Start the ADC
 
