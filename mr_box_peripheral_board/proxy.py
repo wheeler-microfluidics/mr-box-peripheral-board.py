@@ -39,6 +39,49 @@ try:
                                    ('System_Offset', self.MAX11210_getSysOffsetCal())]))
             return calibration_settings
 
+
+        class LED(object):
+            def __init__(self, parent, pin):
+                self._parent = parent
+                self._pin = pin
+                self._brightness = 0
+                self._on = False
+
+                # initialize brightness to 10%
+                self.on = False
+                self.brightness = 0.1
+
+                # set LED pin as an output
+                parent.pin_mode(pin, 1)
+                
+            @property
+            def brightness(self):
+                return self._brightness
+
+            @brightness.setter
+            def brightness(self, value):
+                if 0 <= value <= 1:
+                    self._brightness = value
+                else:
+                    raise ValueError('Value must be between 0 and 1.')
+                if self._on:
+                    self._parent.analog_write(self._pin,
+                                              self._brightness * 255.0)
+
+            @property
+            def on(self):
+                return self._on
+
+            @on.setter
+            def on(self, value):
+                if value:
+                    brightness = self._brightness
+                else:
+                    brightness = 0
+                self._on = value
+                self._parent.analog_write(self._pin, brightness * 255.0)
+
+
         class ZStage(object):
             def __init__(self, parent):
                 self._parent = parent
@@ -157,6 +200,8 @@ try:
         def __init__(self, *args, **kwargs):
             super(ProxyMixin, self).__init__(*args, **kwargs)
             self.zstage = self.ZStage(self)
+            self.led1 = self.LED(self, 5)
+            self.led2 = self.LED(self, 6)
 
         def close(self):
             self.terminate()
