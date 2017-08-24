@@ -180,23 +180,25 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1, a
             :data:`data_ready`.
             delta_t = dt.timedelta(seconds=.1)
         '''
-        
+
         #Start the ADC
         try:
+            dgain = adc_dgain
             proxy.pmt_open_shutter()
             logger.info('PMT Shutter Opened')
             while True:
-                data_i = MAX11210_read(proxy, rate=adc_rate,
+                data_adc = MAX11210_read(proxy, rate=adc_rate,
                                        duration_s=delta_t.total_seconds())
                 #Convert data to Voltage, 24bit ADC with Vref = 3.0 V
-                if (data_i >= (2 ** 24 - 1)):
-                    if (adc_dgain == 1) :
-                        logger.warning('PMT Overange!')
+                data_i = ((data_adc * 3.0) / ((2 ** 24 - 1) * dgain))
+                if (data_adc[0] >= (2 ** 24 - 1)):
+                    if (dgain == 1) :
+                        logger.info('PMT Overange!')
                     else:
-                        adc_dgain /= 2
+                        dgain /= 2
                         logger.info('ADC Overange,'
-                                    'Trying Lower Gain: %s ' %adc_dgain)
-                data_i /=  ((2 ** 24 - 1)/(3.0/adc_dgain))
+                                    'Trying Lower Gain: %s ' %dgain)
+
                 #Convert Voltage to Current, 30kOhm Resistor
                 data_i /= 30e3
                 # Set name to display units.
