@@ -10,7 +10,7 @@ import matplotlib as mpl
 
 from streaming_plot import StreamingPlot
 from ...max11210_adc_ui import MAX11210_read
-
+import logging
 
 def _generate_data(stop_event, data_ready, data):
     '''
@@ -161,7 +161,12 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1, a
     function
         Function suitable for use with the :func:`measure_dialog` function.
     '''
+    #set the adc digital gain
     proxy.MAX11210_setGain(adc_dgain)
+    #Set the pmt shutter pin to output
+    proxy.pin_mode(9, 1)
+
+    logger = logging.getLogger(__name__)
     def _read_adc(stop_event, data_ready, data):
         '''
         Parameters
@@ -175,20 +180,25 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1, a
             :data:`data_ready`.
             delta_t = dt.timedelta(seconds=.1)
         '''
-        #TODO Open and Close the shutter between and not during the measurement
+        
         #Start the ADC
-
-        while True:
-            data_i = MAX11210_read(proxy, rate=adc_rate,
-                                   duration_s=delta_t.total_seconds())
-            #Convert data to Voltage, 24bit ADC with Vref = 3.0 V
-            data_i /=  ((2 ** 24 - 1)/(3.0/adc_dgain))
-            #Convert Voltage to Current, 30kOhm Resistor
-            data_i /= 30e3
-            # Set name to display units.
-            data_i.name = 'Current (A)'
-            data.append(data_i)
-            data_ready.set()
-            if stop_event.is_set():
-                break
+        try:
+            proxy.pmt_open_shutter()
+            logger.info('PMT Shutter Opened')
+            while True:
+                data_i = MAX11210_read(proxy, rate=adc_rate,
+                                       duration_s=delta_t.total_seconds())
+                #Convert data to Voltage, 24bit ADC with Vref = 3.0 V
+                data_i /=  ((2 ** 24 - 1)/(3.0/adc_dgain))
+                #Convert Voltage to Current, 30kOhm Resistor
+                data_i /= 30e3
+                # Set name to display units.
+                data_i.name = 'Current (A)'
+                data.append(data_i)
+                data_ready.set()
+                if stop_event.is_set():
+                    break
+        finally:
+            proxy.pmt_close_shutter()
+            logger.info('PMT Shutter Closed')
     return _read_adc

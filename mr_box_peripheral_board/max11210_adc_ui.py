@@ -186,8 +186,8 @@ def MAX11210_read(proxy, rate,  duration_s):
 
     # proxy.MAX11210_setGain(dgain)
 
-    proxy.pin_mode(9, 1)  # Set pin to output.
-    proxy.pmt_open_shutter()
+    # proxy.pin_mode(9, 1)  # Set pin to output.
+    # proxy.pmt_open_shutter()
 
     start_time = dt.datetime.now()
 
@@ -200,7 +200,8 @@ def MAX11210_read(proxy, rate,  duration_s):
             timestamps.append(dt.datetime.now())
             readings.append(reading_i)
     finally:
-        proxy.pmt_close_shutter()
+        # proxy.pmt_close_shutter()
+        pass
     return pd.Series(readings, index=timestamps)
 
 def MAX11210_status(proxy):
