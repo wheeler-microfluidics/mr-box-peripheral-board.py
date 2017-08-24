@@ -189,6 +189,13 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1, a
                 data_i = MAX11210_read(proxy, rate=adc_rate,
                                        duration_s=delta_t.total_seconds())
                 #Convert data to Voltage, 24bit ADC with Vref = 3.0 V
+                if (data_i >= (2 ** 24 - 1)):
+                    if (adc_dgain == 1) :
+                        logger.warning('PMT Overange!')
+                    else:
+                        adc_dgain /= 2
+                        logger.info('ADC Overange,'
+                                    'Trying Lower Gain: %s ' %adc_dgain)
                 data_i /=  ((2 ** 24 - 1)/(3.0/adc_dgain))
                 #Convert Voltage to Current, 30kOhm Resistor
                 data_i /= 30e3
