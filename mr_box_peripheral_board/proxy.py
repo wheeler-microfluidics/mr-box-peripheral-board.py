@@ -53,7 +53,7 @@ try:
 
                 # set LED pin as an output
                 parent.pin_mode(pin, 1)
-                
+
             @property
             def brightness(self):
                 return self._brightness
@@ -145,6 +145,7 @@ try:
                 if not self.is_up:
                     self._parent._zstage_move_to(
                         self._parent.config['zstage_up_position'])
+                    time.sleep(1)
 
             @property
             def is_down(self):
@@ -236,7 +237,7 @@ try:
             upload()
             time.sleep(0.5)
             self._connect()
-                                    
+
 
 except (ImportError, TypeError):
     Proxy = None
