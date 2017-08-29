@@ -138,6 +138,13 @@ class StreamingPlot(SlaveView):
                                         (si.si_format(x, 2), unit))
                         y_formatter = mpl.ticker.FuncFormatter(yformat_func)
                         self.axis.yaxis.set_major_formatter(y_formatter)
+                    else:
+                        # Use scientific notation.
+                        def yformat_func(x, *args):
+                            return '%.03g' % x
+                        y_formatter = mpl.ticker.FuncFormatter(yformat_func)
+                        self.axis.yaxis.set_major_formatter(y_formatter)
+
                     if match.group('name'):
                         ylabel = match.group('name')
                         if not self.si_units and unit:
