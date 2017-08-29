@@ -1,8 +1,10 @@
 import re
 import threading
 
-from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanvas
-from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as NavigationToolbar
+from matplotlib.backends.backend_gtkagg import (FigureCanvasGTKAgg as
+                                                FigureCanvas)
+from matplotlib.backends.backend_gtkagg import (NavigationToolbar2GTKAgg as
+                                                NavigationToolbar)
 from pygtkhelpers.delegates import SlaveView
 from serial_device.or_event import OrEvent
 import gobject
@@ -27,6 +29,10 @@ class StreamingPlot(SlaveView):
      1. **Plot**: Wait for incoming data and plot as it becomes available.
      2. **Data**: Start provided function to generate data and trigger event
         whenever new data is ready.
+
+    .. versionchanged:: 0.26
+
+        Use scientific notation for y-axis if SI units are not selected.
     '''
     def __init__(self, data_func, data=None, si_units=True):
         if data is not None:
@@ -100,6 +106,7 @@ class StreamingPlot(SlaveView):
 
         for line_i in self.axis.get_lines():
             line_i.remove()
+
         def _reset_ui(*args):
             self.data_ready.clear()
             self.started.clear()
