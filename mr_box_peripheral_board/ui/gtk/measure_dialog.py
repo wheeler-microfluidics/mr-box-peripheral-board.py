@@ -148,7 +148,7 @@ def measure_dialog(f_data, duration_s=None, auto_start=True,
         return False
 
 
-def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1, adc_rate=1 ):
+def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_rate=1 ):
     '''
     Parameters
     ----------
@@ -162,7 +162,7 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1, a
         Function suitable for use with the :func:`measure_dialog` function.
     '''
     #set the adc digital gain
-    proxy.MAX11210_setGain(adc_dgain)
+    # proxy.MAX11210_setGain(adc_dgain)
     #Set the pmt shutter pin to output
     proxy.pin_mode(9, 1)
 
@@ -183,22 +183,14 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_dgain=1, a
 
         #Start the ADC
         try:
-            dgain = adc_dgain
             proxy.pmt_open_shutter()
             logger.info('PMT Shutter Opened')
+            adc_dgain = 1
             while True:
-                data_adc = MAX11210_read(proxy, rate=adc_rate,
+                data_i = MAX11210_read(proxy, rate=adc_rate,
                                        duration_s=delta_t.total_seconds())
                 #Convert data to Voltage, 24bit ADC with Vref = 3.0 V
-                data_i = ((data_adc * 3.0) / ((2 ** 24 - 1) * dgain))
-                if (data_adc[0] >= (2 ** 24 - 1)):
-                    if (dgain == 1) :
-                        logger.info('PMT Overange!')
-                    else:
-                        dgain /= 2
-                        logger.info('ADC Overange,'
-                                    'Trying Lower Gain: %s ' %dgain)
-
+                data_i /=  ((2 ** 24 - 1)/(3.0/adc_dgain))
                 #Convert Voltage to Current, 30kOhm Resistor
                 data_i /= 30e3
                 # Set name to display units.
