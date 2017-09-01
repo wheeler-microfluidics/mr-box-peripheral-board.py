@@ -177,9 +177,6 @@ def MAX11210_begin(proxy):
     proxy.MAX11210_sysOffsetCal();
     proxy.MAX11210_sysGainCal();
 
-    logger = logging.getLogger(__name__)
-    logger.info('\n%s' % proxy.get_adc_calibration())
-
 def MAX11210_read(proxy, rate,  duration_s):
     assert(rate in (1, 2, 5, 10, 15, 30, 60, 120))
     proxy.MAX11210_setConvMode(1)
