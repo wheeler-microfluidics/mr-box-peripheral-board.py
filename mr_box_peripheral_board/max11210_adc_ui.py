@@ -175,8 +175,6 @@ def MAX11210_begin(proxy):
     proxy.MAX11210_setConvMode(CONVERSION_MODE_SINGLE);
     proxy.MAX11210_selfCal();
     proxy.MAX11210_sysOffsetCal();
-    #Shift Baseline so the background signal is > 0.
-    proxy.MAX11210_setSysOffsetCal(proxy.MAX11210_getSysOffsetCal()-10e3)
     proxy.MAX11210_sysGainCal();
 
     logger = logging.getLogger(__name__)

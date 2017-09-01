@@ -27,6 +27,10 @@ message Config {
   optional float zstage_up_position   = 51 [default = 10.1];
   optional uint32 pmt_control_voltage = 52 [default = 900];
   optional uint32 pmt_sampling_rate = 53 [default = 1];
-  optional uint32 pmt_sys_offset_cal = 54 [default = 0];
-  optional uint32 pmt_sys_gain_cal = 55 [default = 0];
+  /* ADC default calibration values
+   * system gain calibration = maximum (2 ^ 24 - 1)
+   * system offset calibration = 0
+   */
+  optional uint32 pmt_sys_gain_cal = 54 [default = 16777215];
+  optional uint32 pmt_sys_offset_cal = 55 [default = 0];
 }
