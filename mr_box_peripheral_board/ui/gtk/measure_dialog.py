@@ -192,7 +192,7 @@ def adc_data_func_factory(proxy, delta_t=dt.timedelta(seconds=1), adc_rate=1 ):
                 #Convert data to Voltage, 24bit ADC with Vref = 3.0 V
                 data_i /=  ((2 ** 24 - 1)/(3.0/adc_dgain))
                 #Convert Voltage to Current, 300kOhm Resistor
-                data_i /= 300e3
+                data_i /= 30e3
                 # Set name to display units.
                 data_i.name = 'Current (A)'
                 data.append(data_i)
