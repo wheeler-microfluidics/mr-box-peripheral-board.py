@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <stdint.h>
+#include <time.h>
 
 namespace base_node_rpc {
 
@@ -66,8 +67,19 @@ public:
   void _zstage_home() {
     if (!state_.home_stop_enabled) return;
 
+    // Use timer to stop homing if it gets stuck
+    time_t start = time(0);
+    int timeLeft = 10; // Timeout after 10 seconds
+
     state_.position = 100;
-    while (!_zstage_at_home()) { _zstage_move(1., 25., false); }
+    while (!_zstage_at_home() && (timeLeft > 0)) {
+      // Update timer
+      time_t end = time(0);
+      time_t timeTaken = end - start;
+      timeLeft = 10 - timeTaken;
+
+      _zstage_move(1., 25., false);
+    }
     state_.position = 0;
   }
 
