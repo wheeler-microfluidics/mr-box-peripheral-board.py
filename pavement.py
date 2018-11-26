@@ -25,7 +25,7 @@ install_distutils_tasks()
 # path to the Arduino firmware sketch source files.
 # sys.path.append(path('.').abspath())
 sys.path.insert(0, '.')
-from mr_box_peripheral_board._version import __version__
+from mr_box_peripheral_board import __version__
 import versioneer
 
 # Import project module.
