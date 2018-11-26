@@ -7,3 +7,5 @@ include setup.py
 recursive-include mr_box_peripheral_board *
 recursive-exclude mr_box_peripheral_board .ipynb_checkpoints/*
 prune *.pyc
+include versioneer.py
+include mr_box_peripheral_board/_version.py

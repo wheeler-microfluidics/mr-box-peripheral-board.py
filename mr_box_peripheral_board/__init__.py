@@ -3,17 +3,17 @@ import warnings
 
 from path_helpers import path
 
-from .version import getVersion
-
-__version__ = getVersion()
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
 
 try:
     from .proxy import Proxy, I2cProxy, SerialProxy
-except (ImportError, TypeError), exception:
+except (ImportError, TypeError) as exception:
     warnings.warn(str(exception))
 try:
     from .config import Config
-except (ImportError, TypeError), exception:
+except (ImportError, TypeError) as exception:
     warnings.warn(str(exception))
 
 

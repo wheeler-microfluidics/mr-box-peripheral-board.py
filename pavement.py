@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from collections import OrderedDict
 from importlib import import_module
 import os
@@ -5,11 +6,16 @@ import sys
 
 from paver.easy import task, needs, path, sh, options
 from paver.setuputils import install_distutils_tasks
+import platformio_helpers as pioh
+import platformio_helpers.develop
 try:
     import base_node_rpc
     from base_node_rpc.pavement_base import *
 except ImportError:
-    pass
+    import warnings
+
+    warnings.warn('Could not import `base_node_rpc` (expected during '
+                  'install).')
 
 # Make standard `setuptools.command` tasks available (e.g., `sdist`).
 install_distutils_tasks()
@@ -17,14 +23,16 @@ install_distutils_tasks()
 # Add package directory to Python path. This enables the use of
 # `mr_box_peripheral_board` functions for discovering, e.g., the
 # path to the Arduino firmware sketch source files.
-sys.path.append(path('.').abspath())
-from mr_box_peripheral_board.version import getVersion
+# sys.path.append(path('.').abspath())
+sys.path.insert(0, '.')
+from mr_box_peripheral_board.version import __version__
+import versioneer
 
 # Import project module.
 PROJECT_PREFIX = 'mr_box_peripheral_board'
 package_name = PROJECT_PREFIX.replace('_', '-')
 rpc_module = import_module(PROJECT_PREFIX)
-VERSION = getVersion()
+VERSION = __version__
 PROPERTIES = OrderedDict([('base_node_software_version',
                            base_node_rpc.__version__),
                           ('package_name', package_name),
@@ -60,6 +68,7 @@ options(
                  'mr_box_peripheral_board::Node'],
     setup=dict(name=PROPERTIES['package_name'],
                version=VERSION,
+               cmdclass=versioneer.get_cmdclass(),
                description=LIB_PROPERTIES['short_description'],
                author=LIB_PROPERTIES['author'],
                author_email=LIB_PROPERTIES['author'],
@@ -72,3 +81,32 @@ options(
                          'mr_box_peripheral_board.bin',
                          'mr_box_peripheral_board.notebooks',
                          'mr_box_peripheral_board.ui']))
+
+@task
+def develop_link():
+    import logging; logging.basicConfig(level=logging.INFO)
+    pioh.develop.link(working_dir=path('.').realpath(),
+                      package_name=package_name)
+
+
+@task
+def develop_unlink():
+    import logging; logging.basicConfig(level=logging.INFO)
+    pioh.develop.unlink(working_dir=path('.').realpath(),
+                        package_name=package_name)
+
+@task
+@needs('generate_all_code')
+@needs('compile_protobufs')
+def build_firmware():
+    sh('pio run')
+
+
+@task
+def upload():
+    sh('pio run --target upload --target nobuild')
+
+
+@task
+def compile_protobufs():
+    import nanopb_helpers as pbh

@@ -1,11 +1,26 @@
-from collections import OrderedDict
+from __future__ import absolute_import
+import calendar
+import datetime as dt
+import logging
+import math
+import threading
 import time
 
-from base_node_rpc.proxy import ConfigMixinBase
-import pandas as pd
+from collections import OrderedDict
 
+from base_node_rpc.proxy import ConfigMixinBase
+
+from path_helpers import path
+from six.moves import range
+import numpy as np
+import pandas as pd
+import serial
+import six
+
+from mr_box_peripheral_board import __version__
 from .bin.upload import upload
 
+logger = logging.getLogger(__name__)
 
 try:
     # XXX The `node` module containing the `Proxy` class definition is
@@ -30,6 +45,71 @@ try:
         `node.Proxy` class.
         '''
         host_package_name = 'mr-box-peripheral-board'
+
+        def __init__(self, *args, **kwargs):
+            self.transaction_lock = threading.RLock()
+
+            try:
+                super(ProxyMixin, self).__init__(*args, **kwargs)
+
+                ignore = kwargs.pop('ignore', [])
+                self.zstage = self.ZStage(self)
+                self.led1 = self.LED(self, 5)
+                self.led2 = self.LED(self, 6)
+
+                # Synchronize device millisecond counter to UTC time upon
+                # connection.
+                self.signals.signal('connected').connect(lambda *args:
+                                                         self.sync_time(),
+                                                         weak=False)
+
+                self.signals.signal('connected').send({'event': 'connected'})
+            except Exception:
+                logger.debug('Error connecting to device.', exc_info=True)
+                self.terminate()
+                raise
+
+        def _connect(self, *args, **kwargs):
+            '''
+            .. versionadded:: 1.55
+                Send ``connected`` event each time a connection has been
+                established. Note that the first ``connected`` event is sent
+                before any receivers have a chance to connect to the signal,
+                but subsequent restored connection events after connecting to
+                the ``connected`` signal will be received.
+            '''
+            super(ProxyMixin, self)._connect(*args, **kwargs)
+            self.signals.signal('connected').send({'event': 'connected'})
+
+        def sync_time(self):
+            '''
+            Synchronize device millisecond counter to UTC time.
+
+
+            .. versionadded:: 1.55
+            '''
+            now = dt.datetime.utcnow()
+            utc_timestamp = (calendar.timegm(now.utctimetuple()) +
+                             now.microsecond * 1e-6)
+            super(ProxyMixin, self).sync_time(utc_timestamp)
+
+        @property
+        def wall_time(self):
+            '''
+            Device UTC wall-clock time.
+
+
+            .. versionadded:: 1.55
+            '''
+            wall_time = super(ProxyMixin, self).wall_time()
+            return dt.datetime.utcfromtimestamp(wall_time)
+
+        @property
+        def signals(self):
+            '''
+            .. versionadded:: 1.43
+            '''
+            return self._packet_queue_manager.signals
 
         def get_adc_calibration(self):
             calibration_settings = \
@@ -198,12 +278,6 @@ try:
             def move_to(self, position):
                 self._parent._zstage_move_to(position)
 
-        def __init__(self, *args, **kwargs):
-            super(ProxyMixin, self).__init__(*args, **kwargs)
-            self.zstage = self.ZStage(self)
-            self.led1 = self.LED(self, 5)
-            self.led2 = self.LED(self, 6)
-
         def close(self):
             self.terminate()
 
@@ -223,13 +297,28 @@ try:
         pass
 
     class SerialProxy(ProxyMixin, _SerialProxy):
+        device_name = 'mr_box_peripheral_board'
+        device_version = __version__
+
         def __init__(self, *args, **kwargs):
             if not 'baudrate' in kwargs:
                 kwargs['baudrate'] = 57600
             if not 'settling_time_s' in kwargs:
                 kwargs['settling_time_s'] = 2.5
+            if not 'device_name' in kwargs:
+                kwargs['device_name'] = device_name
+            if not 'device_version' in kwargs:
+                kwargs['device_version'] = device_version
             super(SerialProxy, self).__init__(*args, **kwargs)
 
+        @property
+        def port(self):
+            try:
+                port = self.serial_thread.protocol.port
+            except Exception:
+                port = None
+            return port
+            
         def flash_firmware(self):
             # currently, we're ignoring the hardware version, but eventually,
             # we will want to pass it to upload()
