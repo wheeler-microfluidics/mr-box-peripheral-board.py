@@ -4,6 +4,9 @@ md "%PREFIX%"\Library\include\Arduino
 md "%PREFIX%"\Library\bin\platformio\mr-box-peripheral-board\default
 endlocal
 
+REM Generate Arduino/Python code
+"%PYTHON%" -m paver generate_all_code
+if errorlevel 1 exit 1
 REM Build firmware
 "%PYTHON%" -m paver build_firmware
 if errorlevel 1 exit 1
