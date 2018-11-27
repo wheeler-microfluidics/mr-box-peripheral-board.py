@@ -22,7 +22,7 @@ def parse_args(args=None):
 if __name__ == '__main__':
     args, extra_args = parse_args()
 
-   extra_args += [r'-DDEVICE_ID_RESPONSE=\"mr::{}\"'
+    extra_args += [r'-DDEVICE_ID_RESPONSE=\"mr::{}\"'
                   .format(args.version)]
     # extra_args += [r'-DDEVICE_ID_RESPONSE=\"mr::0.1\"']
 
