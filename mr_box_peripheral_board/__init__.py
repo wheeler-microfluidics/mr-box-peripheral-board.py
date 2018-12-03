@@ -5,6 +5,8 @@ from path_helpers import path
 
 from ._version import get_versions
 __version__ = get_versions()['version']
+if '+' in __version__:
+    __version__ = __version__.split('+')[0]
 del get_versions
 
 try:
