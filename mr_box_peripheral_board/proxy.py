@@ -255,16 +255,22 @@ try:
         device_name = 'mr_box_peripheral_board'
         device_version = __version__
 
-        def __init__(self, *args, **kwargs):
-            if not 'baudrate' in kwargs:
-                kwargs['baudrate'] = 57600
-            if not 'settling_time_s' in kwargs:
-                kwargs['settling_time_s'] = 2.5
-            if not 'device_name' in kwargs:
-                kwargs['device_name'] = device_name
-            if not 'device_version' in kwargs:
-                kwargs['device_version'] = device_version
-            super(SerialProxy, self).__init__(*args, **kwargs)
+        def __init__(self, **kwargs):
+            kwargs['baudrate'] = 57600
+            kwargs['settling_time_s'] = 2.5
+            kwargs['device_name'] = self.device_name
+            kwargs['device_version'] = self.device_version
+            super(SerialProxy, self).__init__(**kwargs)
+        # def __init__(self, *args, **kwargs):
+        #     if not 'baudrate' in kwargs:
+        #         kwargs['baudrate'] = 57600
+        #     if not 'settling_time_s' in kwargs:
+        #         kwargs['settling_time_s'] = 2.5
+        #     if not 'device_name' in kwargs:
+        #         kwargs['device_name'] = device_name
+        #     if not 'device_version' in kwargs:
+        #         kwargs['device_version'] = device_version
+        #     super(SerialProxy, self).__init__(*args, **kwargs)
 
         @property
         def port(self):
