@@ -252,7 +252,7 @@ try:
         pass
 
     class SerialProxy(ProxyMixin, _SerialProxy):
-        device_name = 'mr_box_peripheral_board'
+        device_name = 'mr-box-peripheral-board'
         device_version = __version__
 
         def __init__(self, **kwargs):
