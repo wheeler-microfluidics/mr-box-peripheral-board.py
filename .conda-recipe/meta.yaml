@@ -72,7 +72,10 @@ requirements:
     - platformio-toolchain-atmelavr
     - pytables
     - python
+    - base-node >=0.14
+    - base-node-dev >=0.14
     - base-node-rpc >=0.51.3
+    - base-node-rpc-dev >=0.51.3
     - arduino-fast-digital
     - arduino-aligned-alloc
     - arduino-linked-list >=1.2.3
@@ -91,8 +94,10 @@ outputs:
         - arduino-aligned-alloc
         - arduino-linked-list >=1.2.3
         - arduino-memory
-        - base-node-dev >=0.51.3
+        - base-node >=0.14
+        - base-node-dev >=0.14
         - base-node-rpc >=0.51.3
+        - base-node-rpc-dev >=0.51.3
         - platformio-tool-scons
         - platformio-toolchain-atmelavr
   - name: {{ PKG_NAME }}
@@ -103,7 +108,10 @@ outputs:
       run:
         - asyncio-helpers
         - {{ pin_subpackage(PKG_NAME + '-dev', max_pin='x.x') }}
-        - base-node >=0.51.3
+        - base-node >=0.14
+        - base-node-dev >=0.14
+        - base-node-rpc >=0.51.3
+        - base-node-rpc-dev >=0.51.3
         - conda-helpers >=0.20
         - logging-helpers
         - nanopb-helpers >=0.11.1
